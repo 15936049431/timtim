@@ -1,0 +1,27 @@
+<?php
+    $this -> css = array('denglu');
+    $this->url =Yii::app()->controller->createUrl("site/login");
+?>
+<header class="box"><div class="header-img"><img src="<?php echo WAP_IMG_URL; ?>denglu_03.png" width="100%;"></div></header>
+<section class="box">
+    <div class="form">
+        <?php $form = $this->beginWidget('CActiveForm', array("id" => "loginform")); ?>
+        <div id="user">
+        <?php echo $form -> passwordField($model,'new_pass',array('class'=>'userinput','required'=>'required','placeholder'=>'新密码')); ?>
+        </div>
+        <div id="password">
+           <?php echo $form -> passwordField($model,'re_new_pass',array('class'=>'userinput','required'=>'required','placeholder'=>'重复新密码')); ?>
+        </div>
+        <input type="submit" id="submit"  value="重置新密码"/>
+        <?php $this->endWidget(); ?>
+    </div>
+</section>
+<?php if(!empty($first_error)){ ?>
+	        <script>
+		        layer.open({
+		            content: '<?php echo $first_error; ?>',
+		            style: 'background-color:#fc6630; color:#fff; border:none;',
+		            time: 2
+		        });
+	        </script>
+<?php } ?>

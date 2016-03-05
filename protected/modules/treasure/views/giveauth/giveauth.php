@@ -1,0 +1,195 @@
+<?php
+    $this->page_title = '管理员授权';
+    $this->page_desc = $manager_info->manager_name.'授权';
+?>
+<div class="row-fluid">
+            <div class="span4">
+            	<div class="box box-black">
+                	<div class="box-title">
+                        <h3><i class="icon-table"></i>已有角色</h3>
+                        <div class="box-tool">
+                            <a data-action="collapse" href="#"><i class="icon-chevron-up"></i></a>
+                            <a data-action="close" href="#"><i class="icon-remove"></i></a>
+                        </div>
+                    </div>
+                    <div class="box-content">
+                        <table class="table table-striped table-hover fill-head">
+                            <thead>
+                                <tr class="">
+                                    <th>#</th>
+                                    <th>角色名称</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($haverolelist as $k => $v){ ?>
+                                <tr>
+                                    <td>1</td>
+                                    <td><?php echo $v['realname']; ?></td>
+                                    <td>
+                                        <a class="btn btn-danger btn-small" href="javascript:;" onclick="removeauth('<?php echo $v['name']; ?>',2)"><i class="icon-trash"></i></a>
+                                    </td>
+                                </tr>
+                                <?php } ?>
+                                
+                            </tbody>
+                        </table>
+                        
+                        
+                        <div class="control-group">
+                            <div class="controls">
+                                <select class="input-xlarge" name="select" id="select" data-rule-required="true" onchange="giveauth(this,this.value,2)" style="width:100%">
+                                    <option value="0">-- 添加角色 --</option>
+                                    <?php foreach($notrolelist as $k => $v){ ?>
+                                    <option value="<?php echo $v['name']; ?>"><?php echo $v['realname']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="span4">
+            	<div class="box box-gray">
+                	<div class="box-title">
+                        <h3><i class="icon-table"></i>已有任务</h3>
+                        <div class="box-tool">
+                            <a data-action="collapse" href="#"><i class="icon-chevron-up"></i></a>
+                            <a data-action="close" href="#"><i class="icon-remove"></i></a>
+                        </div>
+                    </div>
+                    <div class="box-content">
+                        <table class="table table-striped table-hover fill-head">
+                            <thead>
+                                <tr class="">
+                                    <th>#</th>
+                                    <th>任务名称</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($havetasklist as $k => $v){ ?>
+                                <tr>
+                                    <td>1</td>
+                                    <td><?php echo $v['realname']; ?></td>
+                                    <td>
+                                        <a class="btn btn-danger btn-small" href="javascript:;" onclick="removeauth('<?php echo $v['name']; ?>',1)"><i class="icon-trash"></i></a>
+                                    </td>
+                                </tr>
+                                <?php } ?>
+                                
+                            </tbody>
+                        </table>
+                        
+                        
+                        <div class="control-group">
+                            <div class="controls">
+                                <select class="input-xlarge" name="select" id="select" data-rule-required="true" onchange="giveauth(this,this.value,1)" style="width:100%">
+                                    <option value="0">-- 添加任务 --</option>
+                                    <?php foreach($nottasklist as $k => $v){ ?>
+                                    <option value="<?php echo $v['name']; ?>"><?php echo $v['realname']; ?></option>
+                                    <?php } ?>
+                                    
+                                </select>
+                            </div>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="span4">
+            	<div class="box box-green">
+                	<div class="box-title">
+                        <h3><i class="icon-table"></i>已有操作</h3>
+                        <div class="box-tool">
+                            <a data-action="collapse" href="#"><i class="icon-chevron-up"></i></a>
+                            <a data-action="close" href="#"><i class="icon-remove"></i></a>
+                        </div>
+                    </div>
+                    <div class="box-content">
+                        <table class="table table-striped table-hover fill-head">
+                            <thead>
+                                <tr class="">
+                                    <th>#</th>
+                                    <th>操作名称</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($haveoperetionlist as $k => $v){ ?>
+                                <tr>
+                                    <td>1</td>
+                                    <td><?php echo $v['realname']; ?></td>
+                                    <td>
+                                        <a class="btn btn-danger btn-small" href="javascript:;" onclick="removeauth('<?php echo $v['name']; ?>',0)"><i class="icon-trash"></i></a>
+                                    </td>
+                                </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                        
+                        
+                        <div class="control-group">
+                            <div class="controls">
+                                <select class="input-xlarge" name="select" id="select" data-rule-required="true" onchange="giveauth(this,this.value,0)" style="width:100%">
+                                    <option value="0">-- 添加操作 --</option>
+                                    <?php foreach($notoperetionlist as $k=>$v){ ?>
+                                    <option value="<?php echo $v['name']; ?>"><?php echo $v['realname']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+            
+            
+        </div>
+
+<script type="text/javascript">
+    function giveauth(theobj,name,type){
+        if(name!=0){
+            if(confirm('确认执行此操作？')){
+                $.post("<?php echo Yii::app()->controller->createUrl('giveauth/ajaxgiveauth') ?>",{
+                    'Giveauth[manager_id]':'<?php echo Yii::app()->request->getParam('manager_id'); ?>',
+                    'Giveauth[name]':name,
+                    'Giveauth[type]':type
+                },function(result){
+                    var obj = eval("("+result+")");
+                    if(obj.status == 1){
+                        location.reload();
+                    }else{
+                        alert(obj.message);
+                    }
+                });
+            }else{
+                theobj.value = 0;
+            }
+        }
+        
+    }
+    
+    function removeauth(name,type){
+        if(confirm('确认执行此操作？')){
+            $.post("<?php echo Yii::app()->controller->createUrl('giveauth/ajaxremoveauth') ?>",{
+                'Removeauth[manager_id]':'<?php echo Yii::app()->request->getParam('manager_id'); ?>',
+                'Removeauth[name]':name,
+                'Removeauth[type]':type
+            },function(result){
+                var obj = eval("("+result+")");
+                if(obj.status == 1){
+                    location.reload();
+                }else{
+                    alert(obj.message);
+                }
+            });
+        }
+    }
+    
+</script>

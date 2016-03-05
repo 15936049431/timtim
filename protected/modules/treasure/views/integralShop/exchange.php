@@ -1,0 +1,101 @@
+<?php
+    $this->page_title = '商品中心';
+    $this->page_desc = '商品中心简介';
+?>
+<style type="text/css">
+    .clearfix input{ margin: 0;};
+</style>
+<div class="clearfix">
+    <div class="pull-left" style="padding-left: 1em;">
+        <?php $form = $this->beginWidget('CActiveForm',array(
+        	'method'=>'GET',
+            'action'=>Yii::app()->controller->createUrl('integralShop/exchange'),
+                'htmlOptions'=>array(
+                'name'=>'form_search',
+                
+            ),
+        )); ?>
+        <div style="display: inline-block;">
+            搜索：
+        </div>
+        <div class="" style="display: inline-block;">
+            <?php echo $form->textField($user_model,'user_name',array('placeholder'=>'请输入用户名称')); ?>
+        </div>
+        <div style="display: inline-block;">
+            兑换状态：
+        </div>
+        <div class="" style="display: inline-block;">
+            <?php echo $form->dropDownList($model,'exchange_status',array('0'=>'未兑换','1'=>'成功兑换','2'=>'兑换失败')); ?>
+        </div>
+        <div class="btn-group">
+            <a href="javascript:;" onclick="document.form_search.submit();" class="btn btn-success show-tooltip" title="" data-original-title="搜索"><i class="icon-ok"></i></a>
+        </div>
+        <?php $this->endWidget(); ?>
+    </div>
+</div>
+<div class="box-content">
+    <div class="btn-toolbar pull-right">
+        <div class="btn-group">
+            <!--<a class="btn btn-circle show-tooltip" title="" href="<?php echo Yii::app()->controller->createUrl('create'); ?>" data-original-title="添加商品"><i class="icon-plus"></i></a>
+            <a class="btn btn-circle show-tooltip" title="" href="#" data-original-title="Edit selected"><i class="icon-edit"></i></a>
+            <a class="btn btn-circle show-tooltip" title="" href="javascript:;" onclick="delmore()" data-original-title="删除选中文章"><i class="icon-trash"></i></a>-->
+        </div>
+        <div class="btn-group">
+<!--            <a class="btn btn-circle show-tooltip" title="" href="#" data-original-title="Print"><i class="icon-print"></i></a>-->
+<!--            <a class="btn btn-circle show-tooltip" title="" href="#" data-original-title="Export to PDF"><i class="icon-file-text-alt"></i></a>
+            <a class="btn btn-circle show-tooltip" title="" href="#" data-original-title="Export to Exel"><i class="icon-table"></i></a>-->
+        </div>
+        <div class="btn-group">
+        	<a class="btn btn-circle show-tooltip" title="" target="_blank" href="<?php echo Yii::app()->controller->createUrl('exchange',array_merge($_GET,array('outfile_excel'=>'1'))); ?>" data-original-title="导出Exel"><i class="icon-table"></i>
+            <a class="btn btn-circle show-tooltip" title="" href="#" data-original-title="刷新"><i class="icon-repeat"></i></a>
+        </div>
+    </div>
+<table class="table table-advance">
+    <thead>
+        <tr>
+            <th>用户名</th>
+			<th><?php echo $model->getAttributeLabel('exchange_money'); ?></th>
+			<th><?php echo $model->getAttributeLabel('exchange_useintegral'); ?></th>
+			<th><?php echo $model->getAttributeLabel('exchange_type'); ?></th>
+			<th><?php echo $model->getAttributeLabel('exchange_status'); ?></th>
+			<th><?php echo $model->getAttributeLabel('exchange_phone'); ?></th>
+			<th><?php echo $model->getAttributeLabel('exchange_time'); ?></th>
+            <th style="width:100px">操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach($list as $k => $v){ ?>
+        <tr>
+            <td><?php echo $v->user->user_name; ?></td>
+			<td>¥<?php echo $v->exchange_money; ?></td>
+			<td><?php echo $v->exchange_useintegral; ?>分</td>
+			<td><?php echo $v->item->i_name; ?></td>
+			<td><?php if($v->exchange_status==1){echo "兑换成功";}elseif($v->exchange_status==2){echo "兑换失败";}else{echo "未审核";} ?></td>
+			<td><?php echo $v->exchange_phone; ?></td>
+			<td><?php echo LYCommon::subtime($v->exchange_time,2); ?></td>
+            <td>
+                <div class="btn-group">
+                    <!--<a class="btn btn-small show-tooltip" title="" href="#" data-original-title="查看"><i class="icon-zoom-in"></i></a>-->
+                    <a class="btn btn-small show-tooltip" title="" href="<?php echo Yii::app()->controller->createUrl('exchangeview',array('id'=>$v->exchange_id)); ?>" data-original-title="编辑"><i class="icon-edit"></i></a>
+                </div>
+            </td>
+        </tr>
+        <?php } ?>
+    </tbody>
+</table>
+
+    
+<div class="pagination text-center">
+    <ul>
+<!--        <li><a href="#">← 上一页</a></li>
+        <li><a href="#">1</a></li>
+        <li><a href="#">2</a></li>
+        <li class="active"><a href="#">3</a></li>
+        <li><a href="#">4</a></li>
+        <li><a href="#">5</a></li>
+        <li><a href="#">6</a></li>
+        <li><a href="#">下一页 → </a></li>-->
+        <?php echo $page_list; ?>
+    </ul>
+</div>
+</div>

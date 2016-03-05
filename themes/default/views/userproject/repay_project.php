@@ -1,0 +1,61 @@
+<?php
+    $this -> js = array('laydate/laydate');
+    $this -> page_title = '还款中';
+?>
+				<div class="user_money_main">
+                        <dl class="user_money_tab clear">
+                            <dd><a href="<?php echo Yii::app()->controller->createUrl("userproject/project"); ?>">我的借款</a></dd>
+                            <dd class="sel"><a href="<?php echo Yii::app()->controller->createUrl("userproject/repay_project"); ?>">还款中</a></dd>
+                            <dd><a href="<?php echo Yii::app()->controller->createUrl("userproject/repay_view"); ?>">还款明细</a></dd>
+                            <dd><a href="<?php echo Yii::app()->controller->createUrl("userproject/repay_end"); ?>">已还完</a></dd>
+                        </dl>
+						<?php $form = $this->beginWidget('CActiveForm',array(
+							'method'=>'GET',
+							'action'=>Yii::app()->controller->createUrl('userproject/repay_project'),
+							'htmlOptions'=>array(
+								'name'=>'form_search',
+								'class'=>'user_search',
+							),
+						)); ?>
+<!--                        <span>查询类型：</span>
+                            <select name="" id=""></select>-->
+                            <span>时间：</span>
+                            <input type="text" id="start_time" name="start_time" value="<?php echo isset($_REQUEST['start_time'])?$_REQUEST['start_time']:""; ?>" onfocus="laydate();" />
+                            <i>至</i>
+                            <input type="text" onfocus="laydate();" id="end_time"  name="end_time" value="<?php echo isset($_REQUEST['end_time'])?$_REQUEST['end_time']:""; ?>"/>
+                            <input type="submit" class="btn" value="查询" />
+                        <?php $this->endWidget(); ?>
+                        <table class="user_recharge_record ba">
+                            <tr>
+                                <th>借款标</th>
+								<th>类型</th>
+								<th>借出总额</th>
+								<th>年利率</th>
+								<th>期限</th>
+								<th>发布时间</th>
+								<th>进度</th>
+								<th>状态</th>
+								<th>操作</th>
+                            </tr>
+                            <?php foreach($list as $k=>$v){ ?>
+							<tr>
+								<td><a href="<?php echo Yii::app()->controller->createUrl('project/tender',array('id'=>$v->p_id)); ?>" target="_blank"><?php echo LYCommon::truncate_longstr($v->p_name,8); ?></a></td>
+								<td><?php echo LYCommon::findcat('project_type',$v->p_type); ?></td>
+								<td>￥<?php echo $v->p_account; ?></td>
+								<td><?php echo $v->p_apr; ?>%</td>
+								<td><?php echo $v->p_time_limit.(($v->p_time_limittype==1)?"天":"个月"); ?></td>
+								<td><?php echo LYCommon::subtime($v->p_addtime,3); ?></td>
+								<td><?php echo round($v->p_account_yes/$v->p_account*100,2); ?>%</td>
+								<td><?php echo LYCommon::findcat('project_status',$v->p_status); ?></td>
+								<td><a href="<?php echo Yii::app()->controller->createUrl('repay_view',array('id'=>$v->p_id)); ?>">还款明细</a></td>
+							</tr>
+							<?php } ?>
+                            <tr>
+                                <td colspan="9">
+                                    <ul class="pager">
+                                        <?php echo $page_list; ?>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>

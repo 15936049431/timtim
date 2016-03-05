@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>后台管理系统</title>
+<link href="<?php echo BACK_URL; ?>login/css/style.css" rel="stylesheet" type="text/css" />
+<script src="<?php echo BACK_URL; ?>login/js/cloud.js" type="text/javascript"></script>
+<script language="javascript">
+	$(function(){
+    $('.loginbox').css({'position':'absolute','left':($(window).width()-692)/2});
+	$(window).resize(function(){  
+    $('.loginbox').css({'position':'absolute','left':($(window).width()-692)/2});
+    })  
+});  
+</script> 
+</head>
+
+<body style="background-color:#1c77ac; background-image:url(<?php echo BACK_URL; ?>login/images/light.png); background-repeat:no-repeat; background-position:center top; overflow:hidden;">
+
+
+
+    <div id="mainBody">
+      <div id="cloud1" class="cloud"></div>
+      <div id="cloud2" class="cloud"></div>
+    </div>  
+
+
+<div class="logintop">    
+    <span>欢迎登录<?php echo Yii::app()->params['site_name']; ?>管理平台</span>    
+    <ul>
+    <li><a href="<?php echo Yii::app()->homeUrl; ?>">平台首页</a></li>
+    <li><a target="_blank" href="/"></a></li>
+    </ul>    
+    </div>
+    
+    <div class="loginbody">
+    
+    <span class="systemlogo"></span> 
+       
+    <div class="loginbox">
+    <?php $form = $this->beginWidget("CActiveForm",array(
+        'enableClientValidation'=>true,
+        'htmlOptions'=>array('name'=>'form1'),
+        )); ?>
+    <ul>
+    <li><?php echo $form->textField($login_model,'username',array('class'=>'loginuser','onclick'=>'JavaScript:this.value=""','placeholder'=>'用户名')); ?>
+    	<div class="errormessage"><?php echo $form->error($login_model,'username') ?></div>
+    </li>
+    <li><?php echo $form->passwordField($login_model,'password',array('class'=>'loginpwd','onclick'=>'JavaScript:this.value=""','placeholder'=>'密码')); ?>
+    	<div class="errormessage" ><?php echo $form->error($login_model,'password') ?></div>
+    </li>
+    <li><?php echo $form->textField($login_model, 'verifyCode',array('class'=>'safecode','placeholder'=>'验证码','onclick'=>'JavaScript:this.value=""')); ?><span class="safecodenum"><?php $this->widget('CCaptcha',array('showRefreshButton'=>false,'clickableImage'=>true,'imageOptions'=>array('alt'=>'点击换图','title'=>'点击换图','style'=>'cursor:pointer'))); ?></span><input type="submit" class="loginbtn" onclick="this.disabled=true;this.style.backgroundColor='#ccc';document.form1.submit();this.value='登录中...'" value="登录"  />
+    	<div class="errormessage"><?php echo $form->error($login_model,'verifyCode') ?></div>
+    </li>
+    </ul>
+    <?php $this->endWidget(); ?>
+    
+    </div>
+    
+    </div>
+    
+    
+    
+    <div class="loginbm">版权所有  2015 - 2020  <a target="_blank" href="/"><?php echo Yii::app()->params['site_company']; ?></a>  服务热线：15936049431</div>
+	
+    
+</body>
+    
+
+</html>

@@ -1,0 +1,72 @@
+<?php 
+	$this->page_title="产品列表";
+?>
+<!-- 	<div class="container-fluid"> -->
+<!-- 		<div class="col-xs-12 project-search"> -->
+<!-- 			<ul> -->
+<!-- 				<li>全部:</li> -->
+<!-- 				<li><a href="">金银票</a></li> -->
+<!-- 				<li><a href="">理财宝</a></li> -->
+<!-- 				<li><a href="">个人借贷</a></li> -->
+<!-- 			</ul> -->
+<!-- 		</div> -->
+<!-- 		<div class="col-xs-12 project-search"> -->
+<!-- 			<ul> -->
+<!-- 				<li>周期:</li> -->
+<!-- 				<li><a href="">全部</a></li> -->
+<!-- 				<li><a href="">1-3月</a></li> -->
+<!-- 				<li><a href="">3-6月</a></li> -->
+<!-- 				<li><a href="">6-9月</a></li> -->
+<!-- 			</ul> -->
+<!-- 			<div class="clearfix"></div> -->
+<!-- 			<ul> -->
+<!-- 				<li>进度:</li> -->
+<!-- 				<li><a href="">全部</a></li> -->
+<!-- 				<li><a href="">进行中</a></li> -->
+<!-- 				<li><a href="">已完成</a></li> -->
+<!-- 				<li><a href="">还款中</a></li> -->
+<!-- 			</ul> -->
+<!-- 		</div> -->
+<!-- 	</div> -->
+	
+	<div class="container-fluid pd-0 bg-gray">
+		<?php foreach($project_info as $k=>$v){ ?>
+			<div class="row mg-0 project">
+				<div class="col-xs-3 project_left">
+					<p><?php echo $v->p_name;?></p>
+				</div>
+				<div class="col-xs-6 project_center">
+					<p>借款金额(元):<?php echo $v->p_account;?></p>
+					<p>
+						<span class="exp_span"><font class="exp"><?php echo $v->p_apr;?></font>%</span>
+						<span class="month_span pdl-5"><font class="month"><?php echo $v->p_time_limit; ?></font><?php echo ($v->p_time_limittype==1) ? "天" : "个月" ;?></span>
+						<span class="repay pdl-5"></span>
+					</p>
+					<p><span class="exp_span">预期年化</span><span class="month_span pdl-5">理财期限</span></p>
+				</div>
+				<div class="col-xs-3 project_right">
+					<?php if($v->p_status==1){ ?>
+		            	<?php if($v->p_account>$v->p_account_yes){ ?>
+		            		<button type="button" class="btn btn-sm btn-danger project_btn" onclick="window.location.href='<?php echo Yii::app()->controller->createUrl('project/view',array('id'=>$v->p_id)); ?>'">立即投资</button>
+		            	<?php }else{ ?>
+		            		<button type="button" class="btn btn-sm btn-default project_btn" ">已满标</button>
+		            	<?php } ?>
+		            <?php }elseif($v->p_status==2 || $v->p_status==0){ ?>
+		            	<button type="button" class="btn btn-sm btn-default project_btn" ">初审失败</button>
+		            <?php }elseif($v->p_status==3){ ?>
+		            	<button type="button" class="btn btn-sm btn-default project_btn" ">募集完成</button>
+		            <?php }elseif($v->p_status==4){ ?>
+		            	<button type="button" class="btn btn-sm btn-default project_btn" ">满标失败</button>
+		            <?php }elseif($v->p_status==5){ ?>
+		            	<button type="button" class="btn btn-sm btn-default project_btn" ">已流标</button>
+		            <?php }elseif($v->p_status==6){ ?>
+		            	<button type="button" class="btn btn-sm btn-default project_btn" ">已撤销</button>
+		            <?php }else{ ?>
+		            	<button type="button" class="btn btn-sm btn-default project_btn" ">还款完成</button>
+		            <?php } ?>
+					<p><?php echo $v->p_account_yes/$v->p_account*100<100? LYCommon::sprintf_diy_9($v->p_account_yes/$v->p_account*100):100; ?>%</p>
+				</div>
+			</div>
+		<?php } ?>
+		
+	</div>

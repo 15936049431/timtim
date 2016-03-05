@@ -1,0 +1,7 @@
+Array
+(
+    [oldver] => 0
+    [product] => cloudsoft
+    [activityKey] => sss
+    [ct] => 1400464720843
+)

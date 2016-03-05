@@ -1,0 +1,55 @@
+<?php
+$this->page_title = '体验标';
+$this->page_desc = '体验标-投资列表';
+?>
+<style type="text/css">
+    .clearfix input{ margin: 0;};
+</style>
+<div class="clearfix">
+</div>
+<div class="box-content">
+    <div class="btn-toolbar pull-right">
+        <div class="btn-group"></div>
+        <div class="btn-group"></div>
+        <div class="btn-group">
+            <a class="btn btn-circle show-tooltip" title="" href="#" data-original-title="刷新"><i class="icon-repeat"></i></a>
+        </div>
+    </div>
+    <table class="table table-advance">
+        <thead>
+            <tr class="cz_tit">
+                <th>序号</th>
+                <th>投标人</th>
+                <th>当前年利率</th>
+                <th>投标金额</th>
+                <th>有效金额</th>
+                <th>投标时间</th>
+                <th>投标收益</th>
+                <th>是否已还款</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($list as $k => $v) { ?>
+                <tr>
+                    <td><?php echo $k + 1; ?></td>
+                    <td><?php if (isset($v->user)) {
+                echo $v->user->user_name;
+            } ?></td>
+                    <td><?php echo $v->project->p_apr; ?>%</td>
+                    <td>¥<?php echo $v->p_money; ?></td>
+                    <td>¥<?php echo $v->p_realmoney; ?></td>  
+                    <td><?php echo LYCommon::subtime($v->p_addtime, 3); ?></td>
+                     <td>¥<?php echo $v->p_interest; ?></td>
+                     <th><?php  if($v->p_repay_yestime>0){echo LYCommon::subtime($v->p_repay_yestime, 3);}else{echo '未还款';} ?></th>
+                </tr>
+<?php } ?>
+        </tbody>
+    </table>
+
+
+    <div class="pagination text-center">
+        <ul>
+<?php echo $page_list; ?>
+        </ul>
+    </div>
+</div>

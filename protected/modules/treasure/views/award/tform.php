@@ -1,0 +1,97 @@
+<?php 
+	$this -> js = array('js/laydate/laydate');
+?>
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="icon-reorder"></i> 奖品信息</h3>
+                <div class="box-tool">
+                    <a data-action="collapse" href="#"><i class="icon-chevron-up"></i></a>
+                    <a data-action="close" href="#"><i class="icon-remove"></i></a>
+                </div>
+            </div>
+            <div class="box-content">
+                <?php
+                $form = $this->beginWidget('CActiveForm', array(
+                    'htmlOptions' => array(
+                        'enctype' => 'multipart/form-data',
+                        'class' => 'form-horizontal',
+                    ),
+                ));
+                                ?>
+                <!--                输出错误信息  开始-->
+					<?php if ($form->errorSummary($model)) { ?>
+                    <div class="alert alert-error">
+                        <button class="close" data-dismiss="alert">×</button>
+                        <p><?php echo $form->errorSummary($model); ?></p>
+                    </div>
+                    <?php } ?>
+                <!--                输出错误信息  结束-->
+                <div class="control-group">
+                        <?php echo $form->labelEx($model, 'name', array('class' => 'control-label')); ?>
+                    <div class="controls">
+						<?php echo $form->textField($model, 'name', array('class' => 'input-xlarge', 'placeholder' => '请填写' . $model->getAttributeLabel('name'))); ?>
+                        <span class="help-inline"></span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                        <?php echo $form->labelEx($model, 'money', array('class' => 'control-label')); ?>
+                    <div class="controls">
+						<?php echo $form->textField($model, 'money', array('class' => 'input-xlarge', 'placeholder' => '请填写' . $model->getAttributeLabel('money'))); ?>元                          
+                        <span class="help-inline"></span>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                        <?php echo $form->labelEx($model, 'use_time', array('class' => 'control-label')); ?>
+                    <div class="controls">
+						<?php echo $form->textField($model, 'use_time', array('class' => 'input-xlarge', 'placeholder' => '请填写' . $model->getAttributeLabel('use_time'))); ?>天                    
+                        <span class="help-inline"></span>
+                    </div>
+                </div>
+
+				<div class="control-group">
+                        <?php echo $form->labelEx($model, '投资区间', array('class' => 'control-label')); ?>
+                    <div class="controls">
+						<?php echo $form->textField($model, 'low_account', array('class' => 'input-xlarge', 'placeholder' => '请填写' . $model->getAttributeLabel('low_account'),"style"=>"width:142px;")); ?>-
+						<?php echo $form->textField($model, 'most_account', array('class' => 'input-xlarge', 'placeholder' => '请填写' . $model->getAttributeLabel('most_account'),"style"=>"width:142px;")); ?>元                                                
+                        <span class="help-inline"></span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <?php echo $form->labelEx($model, '时间区间', array('class' => 'control-label')); ?>
+                    <div class="controls">
+                    	<?php echo $form->textField($model, 'min_limit', array('class' => 'input-xlarge', 'placeholder' => '请填写' . $model->getAttributeLabel('min_limit'),"style"=>"width:142px;")); ?>- 
+                    	<?php echo $form->textField($model, 'max_limit', array('class' => 'input-xlarge', 'placeholder' => '请填写' . $model->getAttributeLabel('max_limit'),"style"=>"width:142px;")); ?>个月 
+                        <span class="help-inline"></span>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <?php echo $form->labelEx($model, 'status', array('class' => 'control-label')); ?>
+                    <div class="controls">
+						<?php echo $form->dropDownList($model,'status',array("1"=>"开启","0"=>"关闭"),array('class'=>'input-xlarge')); ?>                          
+                        <span class="help-inline"></span>
+                    </div>
+                </div>
+
+				<div class="control-group">
+                        <?php echo $form->labelEx($model, 'description', array('class' => 'control-label')); ?>
+                    <div class="controls">
+						<?php echo $form->textArea($model, 'description', array('class' => 'span4', 'rows' => '5', 'placeholder' => '请填写' . $model->getAttributeLabel('description'))); ?>
+                        <span class="help-inline"></span>
+                    </div>
+                </div>
+				
+                <div class="form-actions">
+                    <input type="submit" class="btn btn-primary" value="提交">
+                    <button type="reset" class="btn">重置</button>
+                </div>
+				<?php $this->endWidget(); ?>
+            </div>
+        </div>
+    </div>
+</div>

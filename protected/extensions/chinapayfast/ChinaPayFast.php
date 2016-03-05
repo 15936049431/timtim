@@ -1,0 +1,506 @@
+<?php
+
+/*
+ * @author: 三氧化二砷 waitfox@qq.com
+ * @Created:2015-8-10 16:53:04
+ * @version:0.01
+ * @desc:
+ * 我只为你回眸一笑，即使不够倾国倾城，我只为你付出此生，换来生再次相守
+ */
+
+class ChinaPayFast {
+
+     public $SDK_SIGN_CERT_PATH; //签名证书路径，私钥
+     public $SDK_SIGN_CERT_PWD = '000000'; //签名证书密码
+     public $SDK_VERIFY_CERT_PATH = ''; //验签证书，公钥
+     public $SDK_ENCRYPT_CERT_PATH; //密码加密证书
+      public $SDK_VERIFY_CERT_DIR='';
+    // 前台通知地址
+     public $SDK_FRONT_NOTIFY_URL = '';
+    // 后台通知地址
+     public $SDK_BACK_NOTIFY_URL = '';
+     
+     const MERID='898330273920438';
+    
+     const MER_ID='898330273920438';//商户代码
+    // 前台请求地址
+    const SDK_FRONT_TRANS_URL = 'https://gateway.95516.com/gateway/api/frontTransReq.do';
+    //const SDK_FRONT_TRANS_URL = 'https://101.231.204.80:5000/gateway/api/frontTransReq.do';
+    // 后台请求地址
+    const SDK_BACK_TRANS_URL = 'https://gateway.95516.com/gateway/api/backTransReq.do';
+    //const SDK_BACK_TRANS_URL = 'https://101.231.204.80:5000/gateway/api/backTransReq.do';
+    // 批量交易
+    const SDK_BATCH_TRANS_URL = 'https://gateway.95516.com/gateway/api/batchTrans.do';
+    //const SDK_BATCH_TRANS_URL = 'https://101.231.204.80:5000/gateway/api/batchTrans.do';
+    //批量交易状态查询
+    const SDK_BATCH_QUERY_URL = 'http://172.17.138.27:10086/gateway/api/batchQueryRequest.do';
+    //http://146.240.25.27:11000/ACP/api/queryTrans.do
+    //单笔查询请求地址
+    const SDK_SINGLE_QUERY_URL = 'https://gateway.95516.com/gateway/api/queryTrans.do';
+    //const SDK_SINGLE_QUERY_URL = 'https://101.231.204.80:5000/gateway/api/queryTrans.do';
+    //文件传输请求地址
+    const SDK_FILE_QUERY_URL = 'https://filedownload.95516.com/';
+    //const SDK_FILE_QUERY_URL = 'https://101.231.204.80:9080/';
+    //有卡交易地址
+    const SDK_Card_Request_Url = 'https://gateway.95516.com/gateway/api/cardTransReq.do';
+    //const SDK_Card_Request_Url = 'https://101.231.204.80:5000/gateway/api/cardTransReq.do';
+    //App交易地址
+    const SDK_App_Request_Url = 'https://gateway.95516.com/gateway/api/appTransReq.do';
+    //const SDK_App_Request_Url = 'https://101.231.204.80:5000/gateway/api/appTransReq.do';
+    // cvn2加密 1：加密 0:不加密
+    const SDK_CVN2_ENC = 0;
+    // 有效期加密 1:加密 0:不加密
+    const SDK_DATE_ENC = 0;
+    // 卡号加密 1：加密 0:不加密
+    const SDK_PAN_ENC = 0;
+
+    private $log;
+
+    public function __construct() {
+        $this->SDK_SIGN_CERT_PATH = Yii::getPathOfAlias('ext') . '/chinapayfast/04388.pfx';
+        $this->SDK_VERIFY_CERT_PATH = Yii::getPathOfAlias('ext') . '/chinapayfast/verify_sign_acp.cer';
+        $this->SDK_ENCRYPT_CERT_PATH = Yii::getPathOfAlias('ext') . '/chinapayfast/encrypt.cer';
+         $this->SDK_VERIFY_CERT_DIR= Yii::getPathOfAlias('ext') . '/chinapayfast/';
+        $this->SDK_SIGN_CERT_PWD = '000000';
+        $this->SDK_FRONT_NOTIFY_URL = Yii::app()->request->hostInfo . '/async/yinlianauth_pay_back.html';
+		$this->SDK_BACK_NOTIFY_URL = Yii::app()->request->hostInfo . '/async/yinlianauth_pay_notice.html';
+        include_once Yii::getPathOfAlias('ext') . '/chinapayfast/log.class.php';
+        $this->log = new PhpLog(Yii::getPathOfAlias('ext') . '/chinapayfast/', "PRC", 'DEBUG');
+    }
+
+    /**
+     * 获取签名证书ID
+     * @return type
+     */
+    function getSignCertId() {
+        return $this->getCertId($this->SDK_SIGN_CERT_PATH);
+    }
+
+    function encryptPin($pan, $pwd) {
+        $cert_path = $this->SDK_ENCRYPT_CERT_PATH;
+        $public_key = $this->getPublicKey($cert_path);
+        return $this->EncryptedPin($pwd, $pan, $public_key);
+    }
+
+    function getPublicKey($cert_path) {
+        return file_get_contents($cert_path);
+    }
+    
+    /**
+     * 返回(签名)证书私钥 -
+     *
+     * @return unknown
+     */
+    function getPrivateKey($cert_path) {
+    	$pkcs12 = file_get_contents ( $cert_path );
+    	openssl_pkcs12_read ( $pkcs12, $certs, $this->SDK_SIGN_CERT_PWD );
+    	return $certs ['pkey'];
+    }
+
+    public function getCertId($cert_path) {
+        $pkcs12certdata = file_get_contents($cert_path);
+        openssl_pkcs12_read($pkcs12certdata, $certs, $this->SDK_SIGN_CERT_PWD);
+        $x509data = $certs ['cert'];
+        openssl_x509_read($x509data);
+        $certdata = openssl_x509_parse($x509data);
+        $cert_id = $certdata ['serialNumber'];
+        return $cert_id;
+    }
+
+    function EncryptedPin($sPin, $sCardNo, $sPubKeyURL) {
+        $sPubKeyURL = trim($this->SDK_ENCRYPT_CERT_PATH, " ");
+        $fp = fopen($sPubKeyURL, "r");
+        if ($fp != NULL) {
+            $sCrt = fread($fp, 8192);
+            fclose($fp);
+        }
+        $sPubCrt = openssl_x509_read($sCrt);
+        if ($sPubCrt === FALSE) {
+            print("openssl_x509_read in false!");
+            return (-1);
+        }
+        $sPubKey = openssl_x509_parse($sPubCrt);
+        $sInput = Pin2PinBlockWithCardNO($sPin, $sCardNo);
+        if ($sInput == 1) {
+            print("Pin2PinBlockWithCardNO Error ! : " . $sInput);
+            return (1);
+        }
+        $iRet = openssl_public_encrypt($sInput, $sOutData, $sCrt, OPENSSL_PKCS1_PADDING);
+        if ($iRet === TRUE) {
+            $sBase64EncodeOutData = base64_encode($sOutData);
+            return $sBase64EncodeOutData;
+        } else {
+            print("openssl_public_encrypt Error !");
+            return (-1);
+        }
+    }
+
+    public function encryptCvn2($cvn2) {
+        $cert_path = $this->SDK_ENCRYPT_CERT_PATH;
+        $public_key = $this->getPublicKey($cert_path);
+        openssl_public_encrypt($cvn2, $crypted, $public_key);
+        return base64_encode($crypted);
+    }
+
+    function encryptDate($certDate) {
+        $cert_path = $this->SDK_ENCRYPT_CERT_PATH;
+        $public_key = $this->getPublicKey($cert_path);
+        openssl_public_encrypt($certDate, $crypted, $public_key);
+        return base64_encode($crypted);
+    }
+
+    public function customerInfo($params) {
+        $pan = isset($params ['accNo']) ? $params ['accNo'] : '';
+        $certifTp = $params['certifTp'];//证件类型，01：身份证
+        $certifId = $params['certifId'];//证件号码
+        $customerNm = $params['customerNm'];//姓名
+        $phoneNo = $params['phoneNo'];
+        $smsCode = $params['smsCode'];//短信验证码
+        $pin = $params['pin'];//持卡人密码
+        $cvn2 = $params['cvn2'];
+        $expired = $params['expired'];
+
+        $customer_info = '{';
+        $customer_info = $customer_info . 'certifTp=' . $certifTp . '&';
+        $customer_info = $customer_info . 'certifId=' . $certifId . '&';
+        $customer_info = $customer_info . 'customerNm=' . $customerNm . '&';
+        $customer_info = $customer_info . 'phoneNo=' . $phoneNo . '&';
+        $customer_info = $customer_info . 'smsCode=' . $smsCode . '&';
+
+        $customer_info = $customer_info . 'cvn2=' . $cvn2 . '&';
+
+
+        if (!empty($pin)) {
+            if (!empty($pan)) {
+                $encrypt_pin = $this->encryptPin($pan, $pin);
+                $customer_info = $customer_info . 'pin=' . $encrypt_pin . '&';
+            } else {
+                $customer_info = $customer_info . 'pin=' . $pin . '&';
+            }
+        } else {
+            $customer_info = $customer_info . 'pin=' . '&';
+        }
+        $customer_info = $customer_info . 'expired=' . $expired;
+
+        $customer_info = $customer_info . '}';
+        $customerInfoBase64 = base64_encode($customer_info);
+
+        return $customerInfoBase64;
+    }
+
+    function encrypt_params(&$params) {
+        $pan = isset($params ['accNo']) ? $params ['accNo'] : '';
+        if (!empty($pan)) {
+            if (1 == self::SDK_PAN_ENC) {
+                $cryptPan = encryptPan($pan);
+                $params ['accNo'] = $cryptPan;
+                $this->log->LogInfo(": {$cryptPan}");
+            }
+        }
+
+        // 证件类型
+        $customerInfo01 = isset($params ['customerInfo01']) ? $params ['customerInfo01'] : '';
+        // 证件号码
+        $customerInfo02 = isset($params ['customerInfo02']) ? $params ['customerInfo02'] : '';
+        // 姓名
+        $customerInfo03 = isset($params ['customerInfo03']) ? $params ['customerInfo03'] : '';
+        // 手机号
+        $customerInfo04 = isset($params ['customerInfo04']) ? $params ['customerInfo04'] : '';
+        // 短信验证码
+        $customerInfo05 = isset($params ['customerInfo05']) ? $params ['customerInfo05'] : '';
+        // 持卡人密码
+        $customerInfo06 = isset($params ['customerInfo06']) ? $params ['customerInfo06'] : '';
+        // cvn2
+        $customerInfo07 = isset($params ['customerInfo07']) ? $params ['customerInfo07'] : '';
+        // 有效期
+        $customerInfo08 = isset($params ['customerInfo08']) ? $params ['customerInfo08'] : '';
+
+        // 去除身份信息域
+        for ($i = 1; $i <= 8; $i ++) {
+            if (isset($params ['customerInfo0' . $i])) {
+                unset($params ['customerInfo0' . $i]);
+            }
+        }
+
+        // 如果子域都是空则退出
+        if (empty($customerInfo01) && empty($customerInfo02) && empty($customerInfo03) && empty($customerInfo04) && empty($customerInfo05) && empty($customerInfo06) && empty($customerInfo07) && isset($customerInfo08)) {
+            $this->log->LogInfo("----------------");
+            return (- 1);
+        }
+
+        // 持卡人身份信息 --证件类型|证件号码|姓名|手机号|短信验证码|持卡人密码|CVN2|有效期
+        $customer_info = '{';
+        $customer_info .= $customerInfo01 . '&';
+        $customer_info .= $customerInfo02 . '&';
+        $customer_info .= $customerInfo03 . '&';
+        $customer_info .= $customerInfo04 . '&';
+        $customer_info .= $customerInfo05 . '&';
+
+        if (!empty($customerInfo06)) {
+            if (!empty($pan)) {
+                $encrypt_pin = $this->encryptPin($pan, $customerInfo06);
+                $customer_info .= $encrypt_pin . '&';
+            } else {
+                $customer_info .= $customerInfo06 . '&';
+            }
+        } else {
+            $customer_info .= '&';
+        }
+
+        if (!empty($customerInfo07)) {
+            if (1 == self::SDK_CVN2_ENC) {
+                $cvn2 = $this->encryptCvn2($customerInfo07);
+                $customer_info .= $cvn2 . '&';
+            } else {
+                $customer_info .= $customerInfo07 . '&';
+            }
+        } else {
+            $customer_info .= '&';
+        }
+
+        if (!empty($customerInfo08)) {
+            if (1 == self:: SDK_DATE_ENC) {
+                $certDate = encryptDate($customerInfo08);
+                $customer_info .= $cvn2;
+            } else {
+                $customer_info .= $customerInfo08;
+            }
+        }
+
+        $customer_info .= '}';
+
+        $this->log->LogInfo('customerInfo ' . $customer_info);
+
+        $customerInfoBase64 = base64_encode($customer_info);
+        $params ['customerInfo'] = $customerInfoBase64;
+        $this->log->LogInfo('-----------------' . $customerInfoBase64);
+    }
+
+    public function sign(&$params) {
+        $this->log->LogInfo('===========');
+        if (isset($params['transTempUrl'])) {
+            unset($params['transTempUrl']);
+        }
+        // 转换成key=val&串
+        $params_str = $this->coverParamsToString($params);
+        $this->log->LogInfo("key=val&... >" . $params_str);
+
+        $params_sha1x16 = sha1($params_str, FALSE);
+        $this->log->LogInfo("sha1x16 >" . $params_sha1x16);
+        // 签名证书路径
+        $cert_path = $this->SDK_SIGN_CERT_PATH;
+        $private_key = $this->getPrivateKey($cert_path);
+        // 签名
+        $sign_falg = openssl_sign($params_sha1x16, $signature, $private_key, OPENSSL_ALGO_SHA1);
+        if ($sign_falg) {
+            $signature_base64 = base64_encode($signature);
+            $this->log->LogInfo(" >" . $signature_base64);
+            $params ['signature'] = $signature_base64;
+        } else {
+            $this->log->LogInfo(">>>>><<<<<<<");
+        }
+        $this->log->LogInfo('===========');
+    }
+
+    /**
+     * 验签
+     * @param String $params_str        	
+     * @param String $signature_str        	
+     */
+    function verify($params) {
+        // 公钥
+        $public_key = $this->getPulbicKeyByCertId($params ['certId']);
+        // 签名串
+        $signature_str = $params ['signature'];
+        unset($params ['signature']);
+        $params_str = $this->coverParamsToString($params);
+        $this->log->LogInfo('[signature] key=val&>' . $params_str);
+        $signature = base64_decode($signature_str);
+        $params_sha1x16 = sha1($params_str, FALSE);
+        $this->log->LogInfo('hax16>' . $params_sha1x16);
+        $isSuccess = openssl_verify($params_sha1x16, $signature, $public_key, OPENSSL_ALGO_SHA1);
+        $this->log->LogInfo($isSuccess ? 'true' : 'false' );
+        return $isSuccess;
+    }
+
+    function getPulbicKeyByCertId($certId) {
+        $this->log->LogInfo('>' . $certId);
+        // 证书目录
+        $cert_dir = $this->SDK_VERIFY_CERT_DIR;
+        $this->log->LogInfo(':>' . $cert_dir);
+        $handle = opendir($cert_dir);
+        if ($handle) {
+            while ($file = readdir($handle)) {
+                clearstatcache();
+                $filePath = $cert_dir . '/' . $file;
+                if (is_file($filePath)) {
+                    if (pathinfo($file, PATHINFO_EXTENSION) == 'cer') {
+                        if ($this->getCertIdByCerPath($filePath) == $certId) {
+                            closedir($handle);
+                            $this->log->LogInfo('');
+                            return $this->getPublicKey($filePath);
+                        }
+                    }
+                }
+            }
+            $this->log->LogInfo('[' . $certId . ']');
+        } else {
+            $this->log->LogInfo(' ' . $cert_dir . '');
+        }
+        closedir($handle);
+        return null;
+    }
+    
+    /**
+     * 取证书ID(.cer)
+     * @param unknown_type $cert_path
+     */
+	function getCertIdByCerPath($cert_path) {
+		$x509data = file_get_contents ( $cert_path );
+		openssl_x509_read ( $x509data );
+		$certdata = openssl_x509_parse ( $x509data );
+		$cert_id = $certdata ['serialNumber'];
+		return $cert_id;
+	}
+
+    /**
+     * 数组 排序后转化为字体串
+     * @param array $params        	
+     * @return string
+     */
+    public function coverParamsToString($params) {
+        $sign_str = '';
+        // 排序
+        ksort($params);
+        foreach ($params as $key => $val) {
+            if ($key == 'signature') {
+                continue;
+            }
+            $sign_str .= sprintf("%s=%s&", $key, $val);
+        }
+        return substr($sign_str, 0, strlen($sign_str) - 1);
+    }
+
+    /**
+     * 字符串转换为 数组
+     * @param unknown_type $str        	
+     * @return multitype:unknown
+     */
+    public function coverStringToArray($str) {
+        $result = array();
+        if (!empty($str)) {
+            $temp = preg_split('/&/', $str);
+            if (!empty($temp)) {
+                foreach ($temp as $key => $val) {
+                    $arr = preg_split('/=/', $val, 2);
+                    if (!empty($arr)) {
+                        $k = $arr ['0'];
+                        $v = $arr ['1'];
+                        $result [$k] = $v;
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * 处理返回报文 解码客户信息 , 如果编码为GBK 则转为utf-8
+     * @param unknown_type $params        	
+     */
+    public function deal_params(&$params) {
+        /**
+         * 解码 customerInfo
+         */
+        if (!empty($params ['customerInfo'])) {
+            $params ['customerInfo'] = base64_decode($params ['customerInfo']);
+        }
+        if (!empty($params ['encoding']) && strtoupper($params ['encoding']) == 'GBK') {
+            foreach ($params as $key => $val) {
+                $params [$key] = iconv('GBK', 'UTF-8', $val);
+            }
+        }
+    }
+
+    /**
+     * 压缩文件 对应java deflate
+     *
+     * @param unknown_type $params        	
+     */
+    public function deflate_file(&$params) {
+        foreach ($_FILES as $file) {
+            $this->log->LogInfo("------------------");
+            if (file_exists($file ['tmp_name'])) {
+                $params ['fileName'] = $file ['name'];
+                $file_content = file_get_contents($file ['tmp_name']);
+                $file_content_deflate = gzcompress($file_content);
+
+                $params ['fileContent'] = base64_encode($file_content_deflate);
+                $this->log->LogInfo(">" . base64_encode($file_content_deflate));
+            } else {
+                $this->log->LogInfo(">>>><<<<<");
+            }
+        }
+    }
+
+    function deal_file($params) {
+        if (isset($params ['fileContent'])) {
+            $this->log->LogInfo("------------------");
+            $fileContent = $params ['fileContent'];
+
+            if (empty($fileContent)) {
+                $this->log->LogInfo('empty');
+            } else {
+                // 文件内容 解压缩
+                $content = gzuncompress(base64_decode($fileContent));
+                $root = '';
+                $filePath = null;
+                if (empty($params ['fileName'])) {
+                    $this->log->LogInfo("");
+                    $filePath = $root . $params ['merId'] . '_' . $params ['batchNo'] . '_' . $params ['txnTime'] . 'txt';
+                } else {
+                    $filePath = $root . $params ['fileName'];
+                }
+                $handle = fopen($filePath, "w+");
+                if (!is_writable($filePath)) {
+                    $this->log->LogInfo(":" . $filePath . "！");
+                } else {
+                    file_put_contents($filePath, $content);
+                    $this->log->LogInfo(">:" . $filePath);
+                }
+                fclose($handle);
+            }
+        }
+    }
+
+    /**
+     * 构造自动提交表单
+     *
+     * @param unknown_type $params        	
+     * @param unknown_type $action        	
+     * @return string
+     */
+    public function create_html($params, $action) {
+        $encodeType = isset($params ['encoding']) ? $params ['encoding'] : 'UTF-8';
+        $html = <<<eot
+        <html>
+        <head>
+        <meta http-equiv="Content-Type" content="text/html; charset={$encodeType}" />
+        </head>
+        <body  onload="javascript:document.pay_form.submit();">
+        <form id="pay_form" name="pay_form" action="{$action}" method="post">
+	
+eot;
+        foreach ($params as $key => $value) {
+            $html .= "    <input type=\"hidden\" name=\"{$key}\" id=\"{$key}\" value=\"{$value}\" />\n";
+        }
+        $html .= <<<eot
+        <input type="submit" type="hidden">
+        </form>
+        </body>
+        </html>
+eot;
+        return $html;
+    }
+
+}

@@ -1,0 +1,324 @@
+<?php
+$this->page_title = '用户资金详情';
+$this->page_desc = '资金详情';
+?>
+<style type="text/css">
+    .controls{padding-top:5px;};
+</style>
+
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="icon-reorder"></i> 用户信息</h3>
+                <div class="box-tool">
+                    <a data-action="close" href="#"><i class="icon-remove"></i></a>
+                </div>
+                <ul  class="nav nav-tabs">
+                    <li class="active"><a href="#nprofile" data-toggle="tab">用户详情</a></li>
+                    <li><a href="#nrecharge" data-toggle="tab">近期充值</a></li>
+                    <li><a href="#nwithdraw" data-toggle="tab">近期提现</a></li>
+                    <li><a href="#naccount" data-toggle="tab">近期资金</a></li>
+                    <li><a href="#nrepay" data-toggle="tab">近期还款</a></li>
+                    <li><a href="#ncollection" data-toggle="tab">近期收款</a></li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane active" id="nprofile">
+                    <div class="box-content form-horizontal">
+                    <?php $form = $this->beginWidget('CActiveForm',array(
+		                'htmlOptions'=>array(
+		                    'class'=>'form-horizontal',
+		                ),
+		            )); ?>
+                    	<div class="control-group">
+			           		<?php echo $form->labelEx($user,'用户名:',array('class'=>'control-label')); ?>
+			                <div class="controls">
+			                    <?php echo $user->user_name; ?>
+			                    <span class="help-inline">(ID:<?php echo $user->user_id; ?>)</span>
+			                </div>
+		            	</div>
+		            	<div class="control-group">
+			           		<?php echo $form->labelEx($user,'真实姓名:',array('class'=>'control-label')); ?>
+			                <div class="controls">
+			                    <?php echo $user->real_name; ?>
+			                    <span class="help-inline">(ID:<?php echo $user->card_num; ?>)</span>
+			                </div>
+		            	</div>
+		            	<div class="control-group">
+			           		<?php echo $form->labelEx($user,'手机号码:',array('class'=>'control-label')); ?>
+			                <div class="controls">
+			                    <?php echo $user->user_phone; ?>
+			                    <span class="help-inline"></span>
+			                </div>
+		            	</div>
+		            	<div class="control-group">
+			           		<?php echo $form->labelEx($user,'充值总额:',array('class'=>'control-label')); ?>
+			                <div class="controls">
+			                    ¥<?php echo $everyuser->user_recharge; ?>
+			                    <span class="help-inline">(共<?php echo $everyuser->user_recharge_num; ?>次)</span>
+			                </div>
+		            	</div>
+		            	<div class="control-group">
+			           		<?php echo $form->labelEx($user,'提现总额:',array('class'=>'control-label')); ?>
+			                <div class="controls">
+			                    ¥<?php echo $everyuser->user_cash; ?>
+			                    <span class="help-inline">(共<?php echo $everyuser->user_cash_num; ?>次)</span>
+			                </div>
+		            	</div>
+		            	<div class="control-group">
+			           		<?php echo $form->labelEx($user,'投标总额:',array('class'=>'control-label')); ?>
+			                <div class="controls">
+			                    ¥<?php echo $everyuser->user_order; ?>
+			                    <span class="help-inline">(共<?php echo $everyuser->user_order_num; ?>次)</span>
+			                </div>
+		            	</div>
+		            	<div class="control-group">
+			           		<?php echo $form->labelEx($user,'提现手续费:',array('class'=>'control-label')); ?>
+			                <div class="controls">
+			                    ¥<?php echo $everyuser->user_cashfee; ?>
+			                    <span class="help-inline"></span>
+			                </div>
+		            	</div>
+		            	<div class="control-group">
+			           		<?php echo $form->labelEx($user,'常用银行卡:',array('class'=>'control-label')); ?>
+			                <div class="controls">
+			                    <?php echo empty($bank_result['c_cardNum'])?"无":$bank_result['c_cardNum']; ?>
+			                    <span class="help-inline">(该银行卡共提现<?php echo empty($bank_result['num'])?0:$bank_result['num']; ?>次,¥<?php echo empty($bank_result['money'])?0:$bank_result['money'];?>元)</span>
+			                </div>
+		            	</div>
+		            	<div class="control-group">
+			           		<?php echo $form->labelEx($user,'已收款:',array('class'=>'control-label')); ?>
+			                <div class="controls">
+			                    ¥<?php echo $everyuser->user_haverepay; ?>
+			                    <span class="help-inline">(已收利息:<?php echo $user_assets->have_interest; ?>)</span>
+			                </div>
+		            	</div>
+		            	<div class="control-group">
+			           		<?php echo $form->labelEx($user,'未收款:',array('class'=>'control-label')); ?>
+			                <div class="controls">
+			                    ¥<?php echo $user_assets->wait_total_money; ?>
+			                    <span class="help-inline">(未收利息:<?php echo $user_assets->wait_interest; ?>)</span>
+			                </div>
+		            	</div>
+		            	<div class="control-group">
+			           		<?php echo $form->labelEx($user,'注册时间:',array('class'=>'control-label')); ?>
+			                <div class="controls">
+			                    <?php echo LYCommon::subtime($user->register_time,1); ?>
+			                    <span class="help-inline">(最近登录时间:<?php echo LYCommon::subtime($user->login_time,1); ?>)</span>
+			                </div>
+		            	</div>
+						<div class="control-group">
+			           		<?php echo $form->labelEx($user,'投资时间:',array('class'=>'control-label')); ?>
+			                <div class="controls">
+			                    <?php echo LYCommon::subtime($everyuser->user_first_order,1); ?>
+			                    <span class="help-inline">(最后投资时间:<?php echo LYCommon::subtime($everyuser->user_end_order,1); ?>)</span>
+			                </div>
+		            	</div>
+						<div class="control-group">
+			           		<?php echo $form->labelEx($user,'借款时间:',array('class'=>'control-label')); ?>
+			                <div class="controls">
+			                    <?php echo LYCommon::subtime($everyuser->user_first_project,1); ?>
+			                    <span class="help-inline">(最后借款时间:<?php echo LYCommon::subtime($everyuser->user_end_project,1); ?>)</span>
+			                </div>
+		            	</div>
+						<div class="control-group">
+			           		<?php echo $form->labelEx($user,'充值时间:',array('class'=>'control-label')); ?>
+			                <div class="controls">
+			                    <?php echo LYCommon::subtime($everyuser->user_first_recharge,1); ?>
+			                    <span class="help-inline">(最后充值时间:<?php echo LYCommon::subtime($everyuser->user_end_recharge,1); ?>)</span>
+			                </div>
+		            	</div>
+						<div class="control-group">
+			           		<?php echo $form->labelEx($user,'提现时间:',array('class'=>'control-label')); ?>
+			                <div class="controls">
+			                    <?php echo LYCommon::subtime($everyuser->user_first_cash,1); ?>
+			                    <span class="help-inline">(最后提现时间:<?php echo LYCommon::subtime($everyuser->user_end_cash,1); ?>)</span>
+			                </div>
+		            	</div>
+			        <?php $this->endWidget(); ?>
+                    </div>
+                </div>
+                <div class="tab-pane" id="nrecharge">
+                    <div class="box-content form-horizontal">
+                        <table class="table table-advance">
+                            <thead>
+                                <tr>
+                                    <th>用户名</th>
+                                    <th>充值金额</th>
+                                    <th>充值类型</th>
+                                    <th>充值通道</th>
+                                    <th>充值状态</th>
+                                    <th>订单号</th>
+                                    <th>充值时间</th>
+                                    <th>审核人</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            	<?php foreach($user_recharge as $k=>$v){ ?>
+                            		<tr>
+                            			<td><?php echo $v->user->user_name; ?></td>
+                            			<td>¥<?php echo $v->r_money; ?></td>
+                            			<td><?php echo ($v->r_type==1)?"线上充值":"线下充值"; ?></td>
+                            			<td><?php echo LYCommon::GetItem($v->r_recharge_type,($v->r_type==1)?'assets_recharge_type':'assets_oevrrecharge_type'); ?></td>
+                            			<td><?php echo $recharge_model->itemAlias('r_status',$v->r_status); ?></td>
+                            			<td><?php echo $v->r_BillNo; ?></td>
+                            			<td><?php echo LYCommon::subtime($v->r_addtime,1); ?></td>
+                            			<td><?php echo ($v->r_status==0)?"无":(empty($v->verify_user) ? "" : $v->verify_user->manager_name); ?></td>
+                            		</tr>
+                            	<?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane" id="nwithdraw">
+                    <div class="box-content form-horizontal">
+                        <table class="table table-advance">
+                            <thead>
+                                <tr>
+                                  <th>用户名</th>
+                                  <th>银行</th>
+                                  <th>卡号</th>
+                                  <th>状态</th>
+                                  <th>金额</th>
+                                  <th>到账金额</th>
+                                  <th>手续费</th>
+                                  <th>添加时间</th>
+                                  <th>审核人</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+								<?php foreach($user_cash as $k=>$v){ ?>
+                            		<tr>
+                            			<td><?php echo $v->user->user_name; ?></td>
+                            			<td><?php echo $v->item->i_name; ?></td>
+                            			<td><?php echo $v->c_cardNum; ?></td>
+                            			<td><?php echo $cash_model->itemAlias('c_status',$v->c_status); ?></td>
+                            			<td>¥<?php echo $v->c_money; ?></td>
+                            			<td>¥<?php echo $v->c_realmoney; ?></td>
+                            			<td>¥<?php echo $v->c_fee; ?></td>
+                            			<td><?php echo LYCommon::subtime($v->c_addtime,1); ?></td>
+                            			<td><?php echo ($v->c_status==0)?"无":(empty($v->verify_user) ? "" : $v->verify_user->manager_name); ?></td>
+                            		</tr>
+                            	<?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane" id="naccount">
+                    <div class="box-content form-horizontal">
+                        <table class="table table-advance">
+                            <thead>
+                                <tr>
+                                  <th>用户名</th>
+                                  <th>操作类型</th>
+                                  <th>变动金额</th>
+                                  <th>总额</th>
+                                  <th>可用金额</th>
+                                  <th>冻结金额</th>
+                                  <th>待收金额</th>
+                                  <th>待收利息</th>
+                                  <th>备注</th>
+                                  <th>添加时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+								<?php foreach($user_bill as $k=>$v){ ?>
+                            		<tr>
+                            			<td><?php echo $v->user->user_name; ?></td>
+                            			<td><?php echo	LYCommon::GetItem($v->b_itemtype,'assets_type'); ?></td>
+                            			<td>¥<?php echo $v->b_money; ?></td>
+                            			<td>¥<?php echo $v->u_total_money; ?></td>
+                            			<td>¥<?php echo $v->u_real_money; ?></td>
+                            			<td>¥<?php echo $v->u_frost_money; ?></td>
+                            			<td>¥<?php echo $v->u_wait_total_money; ?></td>
+                            			<td>¥<?php echo $v->u_wait_interest; ?></td>
+                            			<td><?php echo LYCommon::truncate_longstr($v->b_mark,18); ?></td>
+                            			<td><?php echo LYCommon::subtime($v->b_time,1); ?></td>
+                            		</tr>
+                            	<?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane" id="nrepay">
+                    <div class="box-content form-horizontal">
+                        <table class="table table-advance">
+                            <thead>
+                                <tr>
+                                  <th>用户名</th>
+                                  <th>借款标题</th>
+                                  <th>期数</th>
+                                  <th>年化收益</th>
+                                  <th>借款期限</th>
+                                  <th>应还款时间</th>
+                                  <th>满标时间</th>
+                                  <th>还款方式</th>
+                                  <th>还款总额</th>
+                                  <th>还款本金</th>
+                                  <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+								<?php foreach($user_repay as $k=>$v){ ?>
+                            		<tr>
+                            			<td><?php echo $v->project->user->user_name; ?></td>
+                            			<td><?php echo $v->project->p_name; ?></td>
+                            			<td><?php echo $v->p_order+1; ?></td>
+                            			<td><?php echo $v->project->p_apr; ?>%</td>
+                            			<td><?php echo $v->project->p_time_limit.($v->project->p_time_limittype==1?"天":"个月"); ?></td>
+                            			<td><?php echo LYCommon::subtime($v->p_repaytime,1); ?></td>
+                            			<td><?php echo LYCommon::subtime($v->project->p_fullverifytime,1); ?></td>
+                            			<td><?php echo LYCommon::GetItem_of_value($v->project->p_style,'project_repay_type'); ?></td>
+                            			<td>¥<?php echo $v->p_repayaccount; ?></td>
+                            			<td>¥<?php echo $v->p_money; ?></td>
+                            			<td><?php if($v->p_status==1){echo "已还";}elseif($v->p_status==2){echo "网站待还";}else{echo "未还";} ?></td>
+                            		</tr>
+                            	<?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane" id="ncollection">
+                    <div class="box-content form-horizontal">
+              			<table class="table table-advance">
+                            <thead>
+                                <tr>
+                                  <th>用户名</th>
+                                  <th>借款标</th>
+                                  <th>年化收益</th>
+                                  <th>借款期限</th>
+                                  <th>期数/总期</th>
+                                  <th>收款金额</th>
+                                  <th>应收本金</th>
+                                  <th>应收利息</th>
+                                  <th>应收日期</th>
+                                  <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+								<?php foreach($user_collect as $k=>$v){ ?>
+                            		<tr>
+                            			<td><?php echo $v->project->user->user_name; ?></td>
+                            			<td><?php echo $v->project->p_name; ?></td>
+                            			<td><?php echo $v->project->p_apr; ?>%</td>
+                            			<td><?php echo $v->project->p_time_limit.($v->project->p_time_limittype==1?"天":"个月"); ?></td>
+                            			<td><?php echo $v->p_order+1; ?>/<?php echo $v->project->p_time_limit; ?></td>
+                            			<td>¥<?php echo $v->p_repayaccount; ?></td>
+                            			<td>¥<?php echo $v->p_realmoney; ?></td>
+                            			<td>¥<?php echo $v->p_interest; ?></td>
+                            			<td><?php echo LYCommon::subtime($v->p_repaytime,1); ?></td>
+                            			<td><?php if($v->p_status==1){echo "已收";}elseif($v->p_status==2){echo "-";}else{echo "未收";} ?></td>
+                            		</tr>
+                            	<?php } ?>
+                            </tbody>
+                        </table>  
+                    </div>
+                </div>
+              </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>

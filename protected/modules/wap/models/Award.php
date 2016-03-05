@@ -1,0 +1,138 @@
+<?php
+
+/* 
+ * @author: 三氧化二砷 waitfox@qq.com
+ * @Created:2015-8-27 15:16:57
+ * @version:0.01
+ * @desc: 抽奖
+ * The followings are the available columns in table '{{award}}':
+ * @property string $id
+ * @property integer $active_id
+ * @property string $award_name
+ * @property string $award_desc
+ * @property string $award_pic
+ * @property integer $award_status
+ * @property integer $award_default
+ * @property integer $award_type
+ * @property integer $award_point
+ * @property integer $award_num
+ * @property integer $award_snum
+ * @property string $award_ratio
+ * @property integer $expiretime
+ * @property string $pvalue1
+ * @property integer $addtime
+ */
+class Award extends CActiveRecord
+{
+    /**
+     * @return string the associated database table name
+     */
+    public function tableName()
+    {
+        return '{{award}}';
+    }
+
+    /**
+     * @return array validation rules for model attributes.
+     */
+    public function rules()
+    {
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return array(
+            array('active_id, award_status, award_default, award_type, award_point, award_num, award_snum, expiretime, addtime', 'numerical', 'integerOnly'=>true),
+            array('award_name, award_pic', 'length', 'max'=>128),
+            array('award_desc', 'length', 'max'=>1024),
+            array('award_ratio', 'length', 'max'=>6),
+            array('pvalue1', 'length', 'max'=>256),
+            // The following rule is used by search().
+            // @todo Please remove those attributes that should not be searched.
+            array('id, active_id, award_name, award_desc, award_pic, award_status, award_default, award_type, award_point, award_num, award_snum, award_ratio, expiretime, pvalue1, addtime', 'safe', 'on'=>'search'),
+        );
+    }
+
+    /**
+     * @return array relational rules.
+     */
+    public function relations()
+    {
+        // NOTE: you may need to adjust the relation name and the related
+        // class name for the relations automatically generated below.
+        return array(
+        );
+    }
+
+    /**
+     * @return array customized attribute labels (name=>label)
+     */
+    public function attributeLabels()
+    {
+        return array(
+            'id' => 'ID',
+            'active_id' => '活动期数ID',
+            'award_name' => '奖品名称',
+            'award_desc' => '奖品描述',
+            'award_pic' => '图片地址',
+            'award_status' => '奖品状态，1可用，0不可用',
+            'award_default' => '是否作为默认奖品',
+            'award_type' => '奖品类型，1实物，2积分，3现金，4红包，0其它',
+            'award_point' => '物品点数',
+            'award_num' => '奖品数量',
+            'award_snum' => '奖品抽中数量',
+            'award_ratio' => '奖品概率',
+            'expiretime' => '奖品过期时间，最低万分之一',
+            'pvalue1' => '补充字段',
+            'addtime' => '添加时间',
+        );
+    }
+
+    /**
+     * Retrieves a list of models based on the current search/filter conditions.
+     *
+     * Typical usecase:
+     * - Initialize the model fields with values from filter form.
+     * - Execute this method to get CActiveDataProvider instance which will filter
+     * models according to data in model fields.
+     * - Pass data provider to CGridView, CListView or any similar widget.
+     *
+     * @return CActiveDataProvider the data provider that can return the models
+     * based on the search/filter conditions.
+     */
+    public function search()
+    {
+        // @todo Please modify the following code to remove attributes that should not be searched.
+
+        $criteria=new CDbCriteria;
+
+        $criteria->compare('id',$this->id,true);
+        $criteria->compare('active_id',$this->active_id);
+        $criteria->compare('award_name',$this->award_name,true);
+        $criteria->compare('award_desc',$this->award_desc,true);
+        $criteria->compare('award_pic',$this->award_pic,true);
+        $criteria->compare('award_status',$this->award_status);
+        $criteria->compare('award_default',$this->award_default);
+        $criteria->compare('award_type',$this->award_type);
+        $criteria->compare('award_point',$this->award_point);
+        $criteria->compare('award_num',$this->award_num);
+        $criteria->compare('award_snum',$this->award_snum);
+        $criteria->compare('award_ratio',$this->award_ratio,true);
+        $criteria->compare('expiretime',$this->expiretime);
+        $criteria->compare('pvalue1',$this->pvalue1,true);
+        $criteria->compare('addtime',$this->addtime);
+
+        return new CActiveDataProvider($this, array(
+            'criteria'=>$criteria,
+        ));
+    }
+
+    /**
+     * Returns the static model of the specified AR class.
+     * Please note that you should have this exact method in all your CActiveRecord descendants!
+     * @param string $className active record class name.
+     * @return Award the static model class
+     */
+    public static function model($className=__CLASS__)
+    {
+        return parent::model($className);
+    }
+}

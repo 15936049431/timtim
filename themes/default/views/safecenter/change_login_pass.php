@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=8" />
+        <title><?php echo Yii::app()->params['site_name']; ?></title>
+        <link href="<?php echo UCSS_URL; ?>user.css" rel="stylesheet" />
+		<script src="<?php echo JS_URL; ?>jquery-1.7.1.min.js"></script> 
+		<?php 
+		  	  if(strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 7.0")) {
+				$script="<script src='".JS_URL."layer-old/layer.min.js'></script><script src='".JS_URL."7pointer.js'></script>";
+			  }elseif(strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 6.0")) {
+				$script="<script src='".JS_URL."layer-old/layer.min.js'></script><script src='".JS_URL."7pointer.js'></script>";
+			  }else{
+			  	$script="<script src='".JS_URL."layer/layer.js'></script><script src='".JS_URL."7pointer_back.js'></script>";
+			  }
+			  echo $script;
+		?> 
+    </head>
+    <body>
+        <style type="text/css"> body { background: #fff; } </style>
+        <?php $form = $this -> beginWidget('CActiveForm',array(
+                'id'=>'changeloginpass-form',
+                'enableAjaxValidation'=>true,
+                'enableClientValidation'=>true,
+                'clientOptions'=>array(
+                    'validateOnSubmit'=>true,
+                ),
+                'htmlOptions'=>array(
+                    'name'=>'form1',
+                	'class'=>'user_binding',
+                ),
+            )); ?>
+            <table>
+                <tr>
+                    <td width="100">原登陆密码</td>
+                    <td width="170"><?php echo $form -> passwordField($user_model,'login_pass',array('style'=>'width:200px;padding:2px 10px;height:20px;border:1px solid #cfcfcf;','placeholder'=>'请输入原登录密码')); ?></td>
+                </tr>
+                <tr>
+                    <td>新登陆密码</td>
+                    <td><?php echo $form -> passwordField($user_model,'new_pass',array('style'=>'width:200px;padding:2px 10px;height:20px;border:1px solid #cfcfcf;','placeholder'=>'请输入新登录密码')); ?></td>
+                </tr>
+                <tr>
+                    <td>确认新登陆密码</td>
+                    <td><?php echo $form -> passwordField($user_model,'re_new_pass',array('style'=>'width:200px;padding:2px 10px;height:20px;border:1px solid #cfcfcf;','placeholder'=>'请输入新登录密码')); ?></td>
+                </tr>                
+                <tr>
+                    <td colspan="2" class="tc">
+                        <input type="submit" class="btn" value="提交" />
+                        <input type="reset" class="btn_g" value="取消" onclick="parent.layer.closeAll();"  />
+                    </td>
+                </tr>
+            </table>
+        <?php $this->endWidget(); ?>
+    </body>
+<?php if(!empty($message)){ ?>
+<script>
+	pointererror('<?php echo $message; ?>',6);
+</script>
+<?php } ?>
+<?php if(!empty($success)){ ?>
+<script>
+	pointermsgpar('<?php echo $success['0']; ?>','<?php echo $success['1']; ?>','<?php echo $success['2']; ?>','<?php echo $success['3']; ?>');  
+</script>
+<?php } ?>
+</html>

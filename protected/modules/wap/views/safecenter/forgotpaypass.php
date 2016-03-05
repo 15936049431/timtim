@@ -1,0 +1,42 @@
+<?php
+    $this -> css = array('denglu');
+    $this->url =Yii::app()->request->urlReferrer;
+?>
+<header class="box"><div class="header-img"><img src="<?php echo WAP_IMG_URL; ?>denglu_03.png" width="100%;"></div></header>
+<section class="box">
+    <div class="form">
+        <?php $form = $this->beginWidget('CActiveForm', array("id" => "loginform")); ?>
+        <div id="user">
+            <input type="text" id="user_phone" required="required" value="<?php echo LYCommon::half_replace($user_info -> user_phone); ?>" readonly="realonly" class="userinput" placeholder="手机号码">
+        </div>
+        <div id="password">
+           <input type="text" id="code" name="Forgotpass[code]" class="userinput" id="check" placeholder="验证码">
+        </div><a href="##" id="getcode_btn"><span>获取验证码</span></a>
+        <input type="submit" id="submit"  value="下一步"/>
+        <?php $this->endWidget(); ?>
+    </div>
+</section>
+
+<script type="text/javascript">
+    $("#getcode_btn").click(function(){
+        if($("#user_phone").val() == "" || $("#user_phone").val() == ""){
+            alert('手机号码不可为空');
+            return false;
+        }
+        $.post("<?php echo Yii::app()->controller->createUrl('site/sendsms'); ?>?type=forgotpaypass&phone=<?php echo $user_info -> user_phone; ?>",{},function(data){
+            var obj = eval("("+data+")");
+            if(obj.status != 0){
+                alert(obj.msg);
+            }
+        });
+    });
+</script>
+<?php if(!empty($first_error)){ ?>
+	        <script>
+		        layer.open({
+		            content: '<?php echo $first_error; ?>',
+		            style: 'background-color:#fc6630; color:#fff; border:none;',
+		            time: 2
+		        });
+	        </script>
+<?php } ?>

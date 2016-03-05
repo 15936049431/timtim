@@ -1,0 +1,89 @@
+<?php
+class SystemcatController extends BController{
+    
+    public function actionList(){
+        $model = Systemcat::model();
+        $systemcat_list = $model->findAll();
+        $this->render('list',array(
+            'model'=>$model,
+            'systemcat_list'=>$systemcat_list,
+        ));
+    }
+    
+    public function actionCreate(){
+        $model = new Systemcat;
+        if(isset($_POST['Systemcat'])){
+            $model -> attributes = $_POST['Systemcat'];
+            $model -> isdefault = 1;
+            
+            if($model -> save()){
+                Yii::app()->user->setFlash('success','字段类别添加成功！');
+                $this->redirect(Yii::app()->controller->createUrl('systemcat/list'));
+            }
+        }
+        $this->render('create',array(
+            'model'=>$model,
+        ));
+    }
+    
+    public function actionUpdate($id){
+        $model = self::loadmodel($id);
+        if(isset($_POST['System'])){
+            $model -> attributes = $_POST['System'];
+            if($model->save()){
+                Yii::app()->user->setFlash('success','字段编辑成功！');
+                $this->redirect(Yii::app()->controller->createUrl('systemcat/list'));
+            }
+        }
+        
+        $this->render('update',array(
+            'model'=>$model,
+        ));
+    }
+    
+    public function getallowparent(){
+        $model = Systemcat::model();
+        $model_list = $model->findAll(array(
+            'condition'=>'systemcat_parent = 0',
+        ));
+        $model_arr = array('0'=>'主类别');
+        foreach($model_list as $k => $v){
+            $model_arr[$v->systemcat_id] = $v->systemcat_name;
+        }
+        return $model_arr;
+    }
+    
+    /*
+    * 删除单条记录
+    */
+    public function actionAjaxdelete($id){
+        $model = self::loadmodel($id);
+        if($model->delete()){
+            echo json_encode(1);
+            die;
+        }else{
+            echo json_encode(0);
+            die;
+        }
+    }
+    
+    /*
+    * 批量删除
+    */
+    public function actionAjaxdelmore(){
+        if(isset($_POST['delarr'])){
+            $del_result = array('status'=>0);
+            $model = System::model();
+            if($model->deleteAllByAttributes(array('systemcat_id'=>$_POST['delarr']))){
+                $del_result['status'] = 1;
+            }else{
+                $del_result['message'] = '删除失败';
+            }
+            echo json_encode($del_result);
+        }
+    }
+        
+    public function loadmodel($id){
+        return Systemcat::model()->findByPk($id);
+    }
+}

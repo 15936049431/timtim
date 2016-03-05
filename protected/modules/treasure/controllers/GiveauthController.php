@@ -1,0 +1,165 @@
+<?php
+class GiveauthController extends BController{
+    public function actionList(){
+        $manager_model = Manager::model();
+        $total_count = $manager_model->count();
+        $page = new Pagination($total_count,10);
+        $page_list = $page->fpage(array(4,5,6, 3, 7));
+        $page_list = $total_count<=$page->limitnum?"":$page_list;
+        $manager_list = $manager_model->findAll();
+        $this->render('list',array(
+            'manager_model'=>$manager_model,
+            'manager_list'=>$manager_list,
+            'page_list'=>$page_list,
+        ));
+    }
+    
+    /*
+     * 赋予权限
+     */
+    public function actionGiveauth($manager_id = null){
+        $manager_model = Manager::model();
+        $manager_info = $manager_model->findByPk($manager_id);
+        
+        $connection = Yii::app()->db;
+        $totalitem = $connection->createCommand("SELECT name,realname,type FROM {{authitem}}")->queryAll();
+        $notrolelist = $connection->createCommand("SELECT * FROM {{authitem}} WHERE type = 2 AND name NOT IN(SELECT itemname FROM {{authassignment}} WHERE userid = {$manager_info->manager_id})")->queryAll();
+        $nottasklist = $connection->createCommand("SELECT * FROM {{authitem}} WHERE type = 1 AND name NOT IN(SELECT itemname FROM {{authassignment}} WHERE userid = {$manager_info->manager_id})")->queryAll();
+        $notoperetionlist = $connection->createCommand("SELECT * FROM {{authitem}} WHERE type = 0 AND name NOT IN(SELECT itemname FROM {{authassignment}} WHERE userid = {$manager_info->manager_id})")->queryAll();
+
+        $notrolelist1 = array();
+        $nottasklist1 = array();
+        $notoperetionlist1 = array();
+        foreach($notrolelist as $k => $v){
+            $notrolelist1[] = $v['name'];
+        }
+        foreach($nottasklist as $k => $v){
+            $nottasklist1[] = $v['name'];
+        }
+        foreach($notoperetionlist as $k => $v){
+            $notoperetionlist1[] = $v['name'];
+        }
+        $haverolelist = array();
+        $havetasklist = array();
+        $haveoperetionlist = array();
+        foreach($totalitem as $k => $v){
+            switch($v['type']){
+                case 0:
+                    if(in_array($v['name'], $notoperetionlist1)){
+                        continue;
+                    }else{
+                        $haveoperetionlist_son['name'] = $v['name'];
+                        $haveoperetionlist_son['realname'] = $v['realname'];
+                        $haveoperetionlist[] = $haveoperetionlist_son;
+                    }
+                    break;
+                case 1:
+                    if(in_array($v['name'], $nottasklist1)){
+                        continue;
+                    }else{
+                        $havetasklist_son['name'] = $v['name'];
+                        $havetasklist_son['realname'] = $v['realname'];
+                        $havetasklist[] = $havetasklist_son;
+                    }
+                    break;
+                case 2:
+                    
+                    if(in_array($v['name'], $notrolelist1)){
+                        continue;
+                    }else{
+                        $haverolelist_son['name'] = $v['name'];
+                        $haverolelist_son['realname'] = $v['realname'];
+                        $haverolelist[] = $haverolelist_son;
+                    }
+                    break;
+            }
+        }
+        $this->render('giveauth',array(
+            'manager_info'=>$manager_info,
+            'notrolelist'=>$notrolelist,//可添加角色
+            'nottasklist'=>$nottasklist,//可添加任务
+            'notoperetionlist'=>$notoperetionlist,//可添加操作
+            'haverolelist'=>$haverolelist,//已有角色
+            'havetasklist'=>$havetasklist,//已有任务
+            'haveoperetionlist'=>$haveoperetionlist,//已有操作
+        ));
+    }
+    
+    public function actionAjaxgiveauth(){
+        if(isset($_POST['Giveauth'])){
+            $giveauth_post = $_POST['Giveauth'];
+            $giveauth_result = array('status'=>0);
+            $manager_model = Manager::model();
+            $manager_info = $manager_model ->findByPk($giveauth_post['manager_id']);
+            if(!empty($manager_info)){
+                $authitem_model = Authitem::model();
+                $authitem_info = $authitem_model ->findByPk($giveauth_post['name']);
+                if(!empty($authitem_info)){
+                    $authassignment = new Authassignment;
+                    $authassignment -> itemname = $authitem_info -> name;
+                    $authassignment -> userid = $manager_info -> manager_id;
+                    if($authassignment -> save()){
+                        $giveauth_result['status'] = 1;
+                        $giveauth_result['message'] = '操作成功';
+                    }
+                }else{
+                    switch($giveauth_post['type']){
+                        case 0:
+                            $giveauth_result['message'] = '没有此操作';
+                            break;
+                        case 1;
+                            $giveauth_result['message'] = '没有此任务';
+                            break;
+                        case 2:
+                            $giveauth_result['message'] = '没有此角色';
+                            break;
+                        default :
+                            $giveauth_result['message'] = '非法输入';
+                            break;
+                    }
+                }
+            }else{
+                $giveauth_result['message'] = '没有此管理员';
+            }
+            echo json_encode($giveauth_result);
+        }
+    }
+    
+    
+    public function actionAjaxremoveauth(){
+        if(isset($_POST['Removeauth'])){
+            $removeauth_post = $_POST['Removeauth'];
+            $removeauth_result = array('status'=>0);
+            $manager_model = Manager::model();
+            $manager_info = $manager_model ->findByPk($removeauth_post['manager_id']);
+            if(!empty($manager_info)){
+                $authassignment_model = Authassignment::model();
+                $authassignment_info = $authassignment_model ->findByAttributes(array('itemname'=>$removeauth_post['name'],'userid'=>$removeauth_post['manager_id']));
+                if(!empty($authassignment_info)){
+                    if($authassignment_info->delete()){
+                        $removeauth_result['status'] = 1;
+                        $removeauth_result['message'] = '移除操作成功';
+                    }
+                }else{
+                    switch($removeauth_post['type']){
+                        case 0:
+                            $removeauth_result['message'] = '此管理员没有这个操作';
+                            break;
+                        case 1;
+                            $removeauth_result['message'] = '此管理员没有这个任务';
+                            break;
+                        case 2:
+                            $removeauth_result['message'] = '此管理员没有这个角色';
+                            break;
+                        default :
+                            $removeauth_result['message'] = '非法输入';
+                            break;
+                    }
+                }
+            }else{
+                $removeauth_result['message'] = '没有此管理员';
+            }
+            echo json_encode($removeauth_result);
+        }
+    }
+}

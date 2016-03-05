@@ -1,0 +1,67 @@
+<?php 
+	$this->page_title="银行卡";
+?>
+<div class="container-fluid pd-20">
+	<?php if(empty($user_bank)){ ?>
+		<?php $form = $this->beginWidget('CActiveForm',array("id"=>"chongzhi",
+		  "htmlOptions"=>array(
+				)
+			)
+		  ); ?>
+		  <div class="form-group">
+			<label for="type" class="sr-only">银行</label>
+			<select class="form-control" required="required" name="AssetsBank[b_bank]">
+			  <?php foreach($bank_type as $k=>$v){ ?>
+			  	<option value="<?php echo $v->i_id; ?>"><?php echo $v->i_name; ?></option>
+			  <?php } ?>
+			</select>
+		  </div>
+		  <div class="form-group">
+			<label for="card" class="sr-only">银行卡号</label>
+			<?php echo $form->NumberField($bank_model, "b_cardNum", array("class"=>"form-control","placeholder" => "银行卡号", "required" => "required",'onkeyup'=>"value = value.replace(/[^0-9]/g, '')")); ?>
+		  </div>
+		  <div class="form-group">
+			<label for="card" class="sr-only">银行支行</label>
+			<?php echo $form->textField($bank_model, "b_branch", array("class"=>"form-control","placeholder" => "银行支行(可拨打银行客服电话查询)",  "required" => "required")); ?>
+		  </div>
+		  <div class="form-group">
+			<label for="card" class="sr-only">开户地区</label>
+			<?php echo $form->dropDownList($bank_model,'b_city',$area,array('class'=>'form-control',"style"=>"width:48%;display:inline;")); ?>
+  			<?php echo $form->dropDownList($bank_model,'b_province',array("0"=>"请选择"),array('class'=>'form-control',"style"=>"width:50%;display:inline;")); ?>
+		  </div>
+		  <?php if($user_info->is_realname_check==1){ ?><button type="submit" class="btn btn-default" style="width:100%;margin-top:20px;">确定添加</button><?php }else{ ?>
+		  	<button type="button" class="btn btn-default" style="width:100%;margin-top:20px;" onclick="window.location.href='<?php echo Yii::app()->controller->createUrl("usercenter/home"); ?>'">清先实名认证</button>
+		  <?php } ?>
+		  <?php $this -> endWidget(); ?>	
+	<?php }else{ ?>
+		<div class="bank_one_bg">	
+			<div class="pull-left" style="width:20%;padding:25px 0 0 20px;"><img src="<?php echo WAP_IMG_URL?>bank/<?php echo $user_bank->item->i_nid; ?>.png" style="width:60px;height:60px;"></div>
+			<div class="bank_one pull-right">
+				<p><?php echo LYCommon::GetItem_of_id($user_bank->b_bank,"bank_type"); ?></p>
+				<p>储蓄卡</p>
+				<p><?php echo LYCommon::half_replace($user_bank->b_cardNum); ?></p>
+			</div>
+		</div>
+	<?php } ?>
+</div>
+<script>
+	$(function(){
+      	$("#AssetsBank_b_city").change(function(){
+	 		getProvince();
+		});
+		getProvince();
+		function getProvince(){
+			var city=$("#AssetsBank_b_city").val();
+			$.post("<?php echo Yii::app()->controller->createUrl('usercenter/GetCity') ?>",{'city':city},
+				function(result){
+					if(result!="error"){
+						$("#AssetsBank_b_province").html(result);
+					}
+				}
+			);
+		}
+    });
+</script>
+<?php if (!empty($message)) { ?>
+    <script>msg('<?php echo $message[0]; ?>','<?php echo $message[1]; ?>');</script>
+<?php } ?>

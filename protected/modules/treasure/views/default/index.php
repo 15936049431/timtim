@@ -1,0 +1,78 @@
+<?php
+    $this->page_title = '控制中心';
+    //$this->page_desc = '控制中心简介';
+    $this->css = array('assets/bootstrap-fileupload/bootstrap-fileupload','assets/bootstrap-switch/static/stylesheets/bootstrap-switch');
+    $this->js = array('assets/bootstrap-fileupload/bootstrap-fileupload.min');
+?>
+<style type="text/css">
+    .control-label{ margin-left:100px; text-align: left; margin-right: 100px;}
+    .control-label2{ padding-top:5px; width:50%; display: inline-block;}
+</style>
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="icon-reorder"></i> 系统信息</h3>
+                <div class="box-tool">
+                    <a data-action="collapse" href="#"><i class="icon-chevron-up"></i></a>
+                    <a data-action="close" href="#"><i class="icon-remove"></i></a>
+                </div>
+            </div>
+            <div class="box-content form-horizontal">
+                
+                <div class="control-group">
+                    <label class="control-label" style="text-align:left;">程序版本</label>
+                    <label class="control-label2"><?php echo Yii::app()->params['site_company']; ?>V1.0</label>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" style="text-align:left;">站岗资金</label>
+                    <label class="control-label2">¥<?php echo $platform['money']; ?></label>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" style="text-align:left;">充值总额</label>
+                    <label class="control-label2">¥<?php echo $platform['recharge']; ?></label>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" style="text-align:left;">提现总额</label>
+                    <label class="control-label2">¥<?php echo $platform['cash']; ?></label>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" style="text-align:left;">提现手续费</label>
+                    <label class="control-label2">¥<?php echo $platform['cash_fee']; ?></label>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" style="text-align:left;">借款总额</label>
+                    <label class="control-label2">¥<?php echo $platform['project']; ?></label>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" style="text-align:left;">待收总额</label>
+                    <label class="control-label2">¥<?php echo $platform['collect']; ?></label>
+                </div>
+                
+            </div>
+        </div>
+        
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="icon-reorder"></i> 服务器信息</h3>
+                <div class="box-tool">
+                    <a data-action="collapse" href="#"><i class="icon-chevron-up"></i></a>
+                    <a data-action="close" href="#"><i class="icon-remove"></i></a>
+                </div>
+            </div>
+            <div class="box-content form-horizontal">
+                
+                <div class="control-group">
+                    <label class="control-label" style="text-align:left;">服务器IP</label>
+                    <label class="control-label2"><?php echo $_SERVER['HTTP_HOST']; ?></label>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" style="text-align:left;">Team</label>
+                    <label class="control-label2">treasure@7pointer.com</label>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
+                </div>

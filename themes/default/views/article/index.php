@@ -1,0 +1,9 @@
+<h1 class="fse mt10 tac"><?php echo $article_info->article_title; ?></h1>
+<!--     <div class="tac mt20"> 
+    	<span class="mr20"><?php echo LYCommon::subtime($article_info->add_time,2); ?></span>
+     	<span class="mr20">来源：原创</span> -->
+<!--     	<span class="mr20">作者：xx网</span> -->
+<!--     </div> -->
+    <div class="mt30">
+		<?php echo $article_info->article_cont; ?>
+    </div>

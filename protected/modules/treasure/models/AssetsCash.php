@@ -1,0 +1,123 @@
+<?php
+
+/**
+ * This is the model class for table "{{assets_cash}}".
+ *
+ * The followings are the available columns in table '{{assets_cash}}':
+ * @property string $c_id
+ * @property string $c_user_id
+ * @property integer $c_status
+ * @property string $c_cardNum
+ * @property integer $c_bank
+ * @property string $c_branch
+ * @property string $c_money
+ * @property string $c_realmoney
+ * @property string $c_fee
+ * @property string $c_verify_user
+ * @property string $c_verify_time
+ * @property string $c_verify_remark
+ * @property string $c_addtime
+ * @property string $c_addip
+ */
+class AssetsCash extends CActiveRecord
+{
+	/**
+	 * Returns the static model of the specified AR class.
+	 * @param string $className active record class name.
+	 * @return AssetsCash the static model class
+	 */
+	public static function model($className=__CLASS__)
+	{
+		return parent::model($className);
+	}
+
+	/**
+	 * @return string the associated database table name
+	 */
+	public function tableName()
+	{
+		return '{{assets_cash}}';
+	}
+
+	/**
+	 * @return array validation rules for model attributes.
+	 */
+	public function rules()
+	{
+		// NOTE: you should only define rules for those attributes that
+		// will receive user inputs.
+		return array(
+			array('c_id, c_user_id, c_status, c_cardNum, c_bank,  c_money, c_realmoney, c_fee, c_verify_user, c_verify_time, c_verify_remark, c_addtime, c_addip', 'required'),
+			array('c_status, c_bank', 'numerical', 'integerOnly'=>true),
+			array('c_id, c_user_id, c_verify_user', 'length', 'max'=>18),
+			array('c_cardNum, c_verify_time, c_addtime, c_addip', 'length', 'max'=>128),
+			array('c_branch, c_verify_remark', 'length', 'max'=>255),
+			array('c_money, c_realmoney, c_fee', 'length', 'max'=>11),
+			// The following rule is used by search().
+			// Please remove those attributes that should not be searched.
+			array('c_id, c_user_id, c_status, c_cardNum, c_bank, c_branch, c_money, c_realmoney, c_fee, c_verify_user, c_verify_time, c_verify_remark, c_addtime, c_addip', 'safe', 'on'=>'search'),
+		);
+	}
+
+	/**
+	 * @return array relational rules.
+	 */
+	public function relations()
+	{
+		// NOTE: you may need to adjust the relation name and the related
+		// class name for the relations automatically generated below.
+		return array(
+			'user' => array(self::BELONGS_TO, 'User', 'c_user_id'),
+			'verify_user' => array(self::BELONGS_TO, 'Manager', 'c_verify_user'),
+			'item' => array(self::BELONGS_TO, 'Item', 'c_bank'),
+			'area_p'=>array(self::BELONGS_TO,'Area','c_province'),
+			'area_c'=>array(self::BELONGS_TO,'Area','c_city'),
+		);
+	}
+
+	/**
+	 * @return array customized attribute labels (name=>label)
+	 */
+	public function attributeLabels()
+        {
+                return array('c_id' => '提现ID','c_user_id' => '用户ID','c_status' => '状态','c_cardNum' => '银行卡号','c_bank' => '银行','c_branch' => '银行支行','c_money' => '提现金额','c_realmoney' => '到账金额','c_fee' => '提现手续费','c_verify_user' => '提现审核人员','c_verify_time' => '提现审核时间','c_verify_remark' => '提现审核备注','c_addtime' => '添加时间','c_addip' => '添加IP','user_id' => '用户id','user_name' => '登录名','login_pass' => '登陆密码','pay_pass' => '支付密码','user_email' => '用户邮箱','user_phone' => '用户手机','home_tel' => '家庭电话','user_qq' => '用户QQ','user_pic' => '用户头像','real_name' => '真实姓名','card_num' => '证件号码','user_sex' => '用户性别','user_age' => '用户年龄','user_edu' => 'user_edu','birth_place' => '出生地','live_place' => '居住地','user_address' => '用户联系地址','p_user_id' => 'p_user_id','user_type' => 'user_type','is_email_check' => 'is_email_check','is_phone_check' => 'is_phone_check','is_realname_check' => 'is_realname_check','vip_stop_time' => 'vip_stop_time','is_hook' => 'is_hook','resiter_time' => 'resiter_time','login_time' => 'login_time','c_province'=>'省','c_city'=>'市');
+                }
+public static function itemAlias($type, $code = NULL) {
+        $_items = array('c_status' => array('0' =>'未审','1' =>'通过','2' =>'失败',),'user_sex' => array('0' =>'未知','1' =>'男','2' =>'女',),);
+                if (isset($code))
+                    return isset($_items[$type][$code]) ? $_items[$type][$code] : false;
+                else
+                    return isset($_items[$type]) ? $_items[$type] : false;
+                }
+
+	/**
+	 * Retrieves a list of models based on the current search/filter conditions.
+	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+	 */
+	public function search()
+	{
+		// Warning: Please modify the following code to remove attributes that
+		// should not be searched.
+
+		$criteria=new CDbCriteria;
+
+		$criteria->compare('c_id',$this->c_id,true);
+		$criteria->compare('c_user_id',$this->c_user_id,true);
+		$criteria->compare('c_status',$this->c_status);
+		$criteria->compare('c_cardNum',$this->c_cardNum,true);
+		$criteria->compare('c_bank',$this->c_bank);
+		$criteria->compare('c_branch',$this->c_branch,true);
+		$criteria->compare('c_money',$this->c_money,true);
+		$criteria->compare('c_realmoney',$this->c_realmoney,true);
+		$criteria->compare('c_fee',$this->c_fee,true);
+		$criteria->compare('c_verify_user',$this->c_verify_user,true);
+		$criteria->compare('c_verify_time',$this->c_verify_time,true);
+		$criteria->compare('c_verify_remark',$this->c_verify_remark,true);
+		$criteria->compare('c_addtime',$this->c_addtime,true);
+		$criteria->compare('c_addip',$this->c_addip,true);
+
+		return new CActiveDataProvider($this, array(
+			'criteria'=>$criteria,
+		));
+	}
+}

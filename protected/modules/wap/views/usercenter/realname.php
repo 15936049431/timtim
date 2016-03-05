@@ -1,0 +1,31 @@
+<div class="container-fluid pd-20">
+	<?php if($user_info->is_realname_check==1){ ?>
+		<div class="form-group">
+			<label for="type">真实姓名:</label>
+			<?php echo $user_info->real_name; ?>
+		  </div>
+		  <div class="form-group">
+			<label for="card" >身份证号码:</label>
+			<?php echo $user_info->card_num; ?>
+		  </div>
+	<?php }else{ ?>
+		<?php $form = $this->beginWidget('CActiveForm',array("id"=>"chongzhi",
+		  "htmlOptions"=>array(
+				)
+			)
+		  ); ?>
+		  <div class="form-group">
+			<label for="card">真实姓名:</label>
+			<?php echo $form->TextField($model, "real_name", array("class"=>"form-control","placeholder" => "姓名", "required" => "required")); ?>
+		  </div>
+		  <div class="form-group">
+			<label for="card">身份证号:</label>
+			<?php echo $form->TextField($model, "identity_num", array("class"=>"form-control","placeholder" => "身份证号", "required" => "required",'onkeyup'=>"value = value.replace(/[^0-9Xx]/g, '')")); ?>
+		  </div>
+		  <button type="submit" class="btn btn-default" style="width:100%;margin-top:20px;">确定认证</button>
+		<?php $this->endWidget(); ?>
+	<?php } ?>
+</div>
+<?php if (!empty($message)) { ?>
+    <script>msg('<?php echo $message[0]; ?>','<?php echo empty($message[1]) ? "" : $message[1]; ?>');</script>
+<?php } ?>

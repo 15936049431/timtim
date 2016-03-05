@@ -1,0 +1,50 @@
+<?php
+
+class WController extends CController{
+    public $layout = '/layouts/main';
+    /*
+     * 初始化
+     */
+    protected $_baseUrl;
+    protected $_theme;
+    protected $_themePath;
+    protected $page_title;//页面标题
+    protected $page_desc;//页面简介
+    protected $leftmenu;
+    protected $js=array();
+    protected $css=array();
+    protected $url="";
+    
+    
+    public function init(){
+        $this->_baseUrl = Yii::app()->baseUrl;
+        $this->_theme = Yii::app()->theme;
+        $this->_themePath = str_replace(array('\\', '\\\\'), '/', Yii::app()->theme->basePath);
+        require_once(WWWPATH . DS .'protected'.DS.'config'.DS.'global.php');
+        Yii::app()->params = require(WWWPATH . DS .'protected'.DS.'config'.DS.'params.php');
+        
+        if(Yii::app()->params['site_switch'] == 2){//如果关闭站点
+            die(Yii::app()->params['why_close_site']);
+        }
+    }
+    
+    
+    //检查是否是手机浏览
+    function check_wap(){
+        // 先检查是否为wap代理，准确度高
+        if(stristr($_SERVER['HTTP_VIA'],"wap")){
+            return true;
+        }
+        // 检查浏览器是否接受 WML.
+        elseif(strpos(strtoupper($_SERVER['HTTP_ACCEPT']),"VND.WAP.WML") > 0){
+            return true;
+       }
+       //检查USER_AGENT
+       elseif(preg_match('/(blackberry|configuration\/cldc|hp |hp-|htc |htc_|htc-|iemobile|kindle|midp|mmp|motorola|mobile|nokia|opera mini|opera |Googlebot-Mobile|YahooSeeker\/M1A1-R2D2|android|iphone|ipod|mobi|palm|palmos|pocket|portalmmm|ppc;|smartphone|sonyericsson|sqh|spv|symbian|treo|up.browser|up.link|vodafone|windows ce|xda |xda_)/i', $_SERVER['HTTP_USER_AGENT'])){
+            return true;             
+        }
+        else{
+            return false;    
+       }
+    }
+}
