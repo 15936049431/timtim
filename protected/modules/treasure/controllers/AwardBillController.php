@@ -8,10 +8,10 @@
  * 我只为你回眸一笑，即使不够倾国倾城，我只为你付出此生，换来生再次相守
  */
 
-class AwardLogController extends BController {
+class AwardBillController extends BController {
     
     public function actionList() {
-        $model = AwardLog::model();
+        $model = AwardBill::model();
         $total_count = $model->count();
         $page = new Pagination($total_count, 10);
         $page_list = $page->fpage(array(4, 5, 6));

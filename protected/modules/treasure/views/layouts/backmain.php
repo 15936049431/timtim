@@ -614,7 +614,7 @@
                     	array(
                     		'title'=>'红包记录',
                     		'url'=>'awardbill/list',
-                    		'nurl'=>array('awardbill/update',),
+                    		'nurl'=>array('awardBill/update',),
                     	),
                     ),
                 ),

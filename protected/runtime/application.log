@@ -5369,3 +5369,116 @@ Stack trace:
 #7 D:\software\wamp\www\tiantianli\framework\base\CApplication.php(184): CWebApplication->processRequest()
 #8 D:\software\wamp\www\tiantianli\index.php(22): CWebApplication->run()
 REQUEST_URI=/treasure/award/update/id/14571585603419030.html
+2016/03/05 14:49:57 [error] [exception.CHttpException.404] exception 'CHttpException' with message '无法解析请求 "treasure/awardbill/list"。' in D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php:286
+Stack trace:
+#0 D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php(141): CWebApplication->runController('treasure/awardb...')
+#1 D:\software\wamp\www\tiantianli\framework\base\CApplication.php(184): CWebApplication->processRequest()
+#2 D:\software\wamp\www\tiantianli\index.php(22): CApplication->run()
+#3 {main}
+REQUEST_URI=/treasure/awardbill/list.html
+HTTP_REFERER=http://127.0.0.2/treasure/award/tlist.html
+---
+2016/03/06 09:33:37 [error] [exception.CHttpException.404] exception 'CHttpException' with message '无法解析请求 "treasure/awardbill/list"。' in D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php:286
+Stack trace:
+#0 D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php(141): CWebApplication->runController('treasure/awardb...')
+#1 D:\software\wamp\www\tiantianli\framework\base\CApplication.php(184): CWebApplication->processRequest()
+#2 D:\software\wamp\www\tiantianli\index.php(22): CApplication->run()
+#3 {main}
+REQUEST_URI=/treasure/awardbill/list.html
+HTTP_REFERER=http://127.0.0.2/treasure/award/tlist.html
+---
+2016/03/06 09:34:12 [error] [exception.CHttpException.404] exception 'CHttpException' with message '无法解析请求 "treasure/awardbill/list"。' in D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php:286
+Stack trace:
+#0 D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php(141): CWebApplication->runController('treasure/awardb...')
+#1 D:\software\wamp\www\tiantianli\framework\base\CApplication.php(184): CWebApplication->processRequest()
+#2 D:\software\wamp\www\tiantianli\index.php(22): CApplication->run()
+#3 {main}
+REQUEST_URI=/treasure/awardbill/list.html
+HTTP_REFERER=http://127.0.0.2/treasure/award/tlist.html
+---
+2016/03/06 09:34:36 [error] [exception.CHttpException.404] exception 'CHttpException' with message '无法解析请求 "treasure/awardbill/list"。' in D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php:286
+Stack trace:
+#0 D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php(141): CWebApplication->runController('treasure/awardb...')
+#1 D:\software\wamp\www\tiantianli\framework\base\CApplication.php(184): CWebApplication->processRequest()
+#2 D:\software\wamp\www\tiantianli\index.php(22): CApplication->run()
+#3 {main}
+REQUEST_URI=/treasure/awardbill/list.html
+HTTP_REFERER=http://127.0.0.2/treasure/award/tlist.html
+---
+2016/03/06 09:34:42 [error] [exception.CHttpException.404] exception 'CHttpException' with message '无法解析请求 "treasure/awardbill/list"。' in D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php:286
+Stack trace:
+#0 D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php(141): CWebApplication->runController('treasure/awardb...')
+#1 D:\software\wamp\www\tiantianli\framework\base\CApplication.php(184): CWebApplication->processRequest()
+#2 D:\software\wamp\www\tiantianli\index.php(22): CApplication->run()
+#3 {main}
+REQUEST_URI=/treasure/awardbill/list.html
+HTTP_REFERER=http://127.0.0.2/treasure/award/tlist.html
+---
+2016/03/06 09:34:42 [error] [exception.CHttpException.404] exception 'CHttpException' with message '无法解析请求 "treasure/awardbill/list"。' in D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php:286
+Stack trace:
+#0 D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php(141): CWebApplication->runController('treasure/awardb...')
+#1 D:\software\wamp\www\tiantianli\framework\base\CApplication.php(184): CWebApplication->processRequest()
+#2 D:\software\wamp\www\tiantianli\index.php(22): CApplication->run()
+#3 {main}
+REQUEST_URI=/treasure/awardbill/list.html
+HTTP_REFERER=http://127.0.0.2/treasure/award/tlist.html
+---
+2016/03/06 09:34:42 [error] [exception.CHttpException.404] exception 'CHttpException' with message '无法解析请求 "treasure/awardbill/list"。' in D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php:286
+Stack trace:
+#0 D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php(141): CWebApplication->runController('treasure/awardb...')
+#1 D:\software\wamp\www\tiantianli\framework\base\CApplication.php(184): CWebApplication->processRequest()
+#2 D:\software\wamp\www\tiantianli\index.php(22): CApplication->run()
+#3 {main}
+REQUEST_URI=/treasure/awardbill/list.html
+HTTP_REFERER=http://127.0.0.2/treasure/award/tlist.html
+---
+2016/03/06 09:34:42 [error] [exception.CHttpException.404] exception 'CHttpException' with message '无法解析请求 "treasure/awardbill/list"。' in D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php:286
+Stack trace:
+#0 D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php(141): CWebApplication->runController('treasure/awardb...')
+#1 D:\software\wamp\www\tiantianli\framework\base\CApplication.php(184): CWebApplication->processRequest()
+#2 D:\software\wamp\www\tiantianli\index.php(22): CApplication->run()
+#3 {main}
+REQUEST_URI=/treasure/awardbill/list.html
+HTTP_REFERER=http://127.0.0.2/treasure/award/tlist.html
+---
+2016/03/06 09:34:44 [error] [exception.CHttpException.404] exception 'CHttpException' with message '无法解析请求 "treasure/awardbill/list"。' in D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php:286
+Stack trace:
+#0 D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php(141): CWebApplication->runController('treasure/awardb...')
+#1 D:\software\wamp\www\tiantianli\framework\base\CApplication.php(184): CWebApplication->processRequest()
+#2 D:\software\wamp\www\tiantianli\index.php(22): CApplication->run()
+#3 {main}
+REQUEST_URI=/treasure/awardbill/list.html
+HTTP_REFERER=http://127.0.0.2/treasure/award/tlist.html
+---
+2016/03/06 09:34:51 [error] [php] include(AwardBill.php): failed to open stream: No such file or directory (D:\software\wamp\www\tiantianli\framework\YiiBase.php:432)
+Stack trace:
+#0 D:\software\wamp\www\tiantianli\protected\modules\treasure\controllers\AwardBillController.php(14): spl_autoload_call()
+#1 D:\software\wamp\www\tiantianli\framework\web\actions\CInlineAction.php(49): AwardBillController->actionList()
+#2 D:\software\wamp\www\tiantianli\framework\web\CController.php(308): CInlineAction->runWithParams()
+#3 D:\software\wamp\www\tiantianli\framework\web\CController.php(286): AwardBillController->runAction()
+#4 D:\software\wamp\www\tiantianli\framework\web\CController.php(265): AwardBillController->runActionWithFilters()
+#5 D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php(282): AwardBillController->run()
+#6 D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php(141): CWebApplication->runController()
+#7 D:\software\wamp\www\tiantianli\framework\base\CApplication.php(184): CWebApplication->processRequest()
+#8 D:\software\wamp\www\tiantianli\index.php(22): CWebApplication->run()
+REQUEST_URI=/treasure/awardbill/list.html
+2016/03/06 09:38:23 [error] [php] include(AwardBill.php): failed to open stream: No such file or directory (D:\software\wamp\www\tiantianli\framework\YiiBase.php:432)
+Stack trace:
+#0 D:\software\wamp\www\tiantianli\protected\modules\treasure\controllers\AwardBillController.php(14): spl_autoload_call()
+#1 D:\software\wamp\www\tiantianli\framework\web\actions\CInlineAction.php(49): AwardBillController->actionList()
+#2 D:\software\wamp\www\tiantianli\framework\web\CController.php(308): CInlineAction->runWithParams()
+#3 D:\software\wamp\www\tiantianli\framework\web\CController.php(286): AwardBillController->runAction()
+#4 D:\software\wamp\www\tiantianli\framework\web\CController.php(265): AwardBillController->runActionWithFilters()
+#5 D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php(282): AwardBillController->run()
+#6 D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php(141): CWebApplication->runController()
+#7 D:\software\wamp\www\tiantianli\framework\base\CApplication.php(184): CWebApplication->processRequest()
+#8 D:\software\wamp\www\tiantianli\index.php(22): CWebApplication->run()
+REQUEST_URI=/treasure/awardbill/list.html
+2016/03/06 09:38:25 [error] [exception.CHttpException.404] exception 'CHttpException' with message '无法解析请求 "favicon.ico"。' in D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php:286
+Stack trace:
+#0 D:\software\wamp\www\tiantianli\framework\web\CWebApplication.php(141): CWebApplication->runController('favicon.ico')
+#1 D:\software\wamp\www\tiantianli\framework\base\CApplication.php(184): CWebApplication->processRequest()
+#2 D:\software\wamp\www\tiantianli\index.php(22): CApplication->run()
+#3 {main}
+REQUEST_URI=/favicon.ico
+---

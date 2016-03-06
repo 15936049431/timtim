@@ -1,0 +1,151 @@
+<?php
+
+/**
+ * This is the model class for table "{{award_bill}}".
+ *
+ * The followings are the available columns in table '{{award_bill}}':
+ * @property string $id
+ * @property string $user_id
+ * @property string $award_id
+ * @property string $type_id
+ * @property string $name
+ * @property string $get_time
+ * @property string $end_time
+ * @property string $use_time
+ * @property string $award_alias
+ * @property integer $money
+ * @property integer $low_account
+ * @property integer $most_account
+ * @property integer $min_limit
+ * @property integer $max_limit
+ * @property integer $type
+ * @property integer $status
+ * @property string $project_id
+ * @property string $order_id
+ * @property string $add_time
+ * @property string $add_ip
+ */
+class AwardBill extends CActiveRecord
+{
+	/**
+	 * @return string the associated database table name
+	 */
+	public function tableName()
+	{
+		return '{{award_bill}}';
+	}
+
+	/**
+	 * @return array validation rules for model attributes.
+	 */
+	public function rules()
+	{
+		// NOTE: you should only define rules for those attributes that
+		// will receive user inputs.
+		return array(
+			array('id, user_id, award_id, type_id, name, get_time, end_time, use_time, award_alias, money, low_account, most_account, min_limit, max_limit, type, status, project_id, order_id, add_time, add_ip', 'required'),
+			array('money, low_account, most_account, min_limit, max_limit, type, status', 'numerical', 'integerOnly'=>true),
+			array('id, user_id, award_id, type_id, project_id, order_id', 'length', 'max'=>18),
+			array('name, award_alias', 'length', 'max'=>255),
+			array('get_time, end_time, use_time, add_time, add_ip', 'length', 'max'=>20),
+			// The following rule is used by search().
+			// @todo Please remove those attributes that should not be searched.
+			array('id, user_id, award_id, type_id, name, get_time, end_time, use_time, award_alias, money, low_account, most_account, min_limit, max_limit, type, status, project_id, order_id, add_time, add_ip', 'safe', 'on'=>'search'),
+		);
+	}
+
+	/**
+	 * @return array relational rules.
+	 */
+	public function relations()
+	{
+		// NOTE: you may need to adjust the relation name and the related
+		// class name for the relations automatically generated below.
+		return array(
+		);
+	}
+
+	/**
+	 * @return array customized attribute labels (name=>label)
+	 */
+	public function attributeLabels()
+	{
+		return array(
+			'id' => 'ID',
+			'user_id' => 'User',
+			'award_id' => 'Award',
+			'type_id' => 'Type',
+			'name' => 'Name',
+			'get_time' => 'Get Time',
+			'end_time' => 'End Time',
+			'use_time' => 'Use Time',
+			'award_alias' => 'Award Alias',
+			'money' => 'Money',
+			'low_account' => 'Low Account',
+			'most_account' => 'Most Account',
+			'min_limit' => 'Min Limit',
+			'max_limit' => 'Max Limit',
+			'type' => 'Type',
+			'status' => 'Status',
+			'project_id' => 'Project',
+			'order_id' => 'Order',
+			'add_time' => 'Add Time',
+			'add_ip' => 'Add Ip',
+		);
+	}
+
+	/**
+	 * Retrieves a list of models based on the current search/filter conditions.
+	 *
+	 * Typical usecase:
+	 * - Initialize the model fields with values from filter form.
+	 * - Execute this method to get CActiveDataProvider instance which will filter
+	 * models according to data in model fields.
+	 * - Pass data provider to CGridView, CListView or any similar widget.
+	 *
+	 * @return CActiveDataProvider the data provider that can return the models
+	 * based on the search/filter conditions.
+	 */
+	public function search()
+	{
+		// @todo Please modify the following code to remove attributes that should not be searched.
+
+		$criteria=new CDbCriteria;
+
+		$criteria->compare('id',$this->id,true);
+		$criteria->compare('user_id',$this->user_id,true);
+		$criteria->compare('award_id',$this->award_id,true);
+		$criteria->compare('type_id',$this->type_id,true);
+		$criteria->compare('name',$this->name,true);
+		$criteria->compare('get_time',$this->get_time,true);
+		$criteria->compare('end_time',$this->end_time,true);
+		$criteria->compare('use_time',$this->use_time,true);
+		$criteria->compare('award_alias',$this->award_alias,true);
+		$criteria->compare('money',$this->money);
+		$criteria->compare('low_account',$this->low_account);
+		$criteria->compare('most_account',$this->most_account);
+		$criteria->compare('min_limit',$this->min_limit);
+		$criteria->compare('max_limit',$this->max_limit);
+		$criteria->compare('type',$this->type);
+		$criteria->compare('status',$this->status);
+		$criteria->compare('project_id',$this->project_id,true);
+		$criteria->compare('order_id',$this->order_id,true);
+		$criteria->compare('add_time',$this->add_time,true);
+		$criteria->compare('add_ip',$this->add_ip,true);
+
+		return new CActiveDataProvider($this, array(
+			'criteria'=>$criteria,
+		));
+	}
+
+	/**
+	 * Returns the static model of the specified AR class.
+	 * Please note that you should have this exact method in all your CActiveRecord descendants!
+	 * @param string $className active record class name.
+	 * @return AwardBill the static model class
+	 */
+	public static function model($className=__CLASS__)
+	{
+		return parent::model($className);
+	}
+}
