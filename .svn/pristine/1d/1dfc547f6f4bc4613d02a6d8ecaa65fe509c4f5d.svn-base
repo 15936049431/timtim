@@ -1,0 +1,192 @@
+<?php
+/*
+ * @author: 三氧化二砷 waitfox@qq.com
+ * @Created:2015-7-1 19:52:30
+ * @version:0.01
+ * @desc:
+ * 我只为你回眸一笑，即使不够倾国倾城，我只为你付出此生，换来生再次相守
+ */
+$this->page_title = '发布体验标';
+$this->page_desc = '发布体验标';
+$this->css = array('assets/bootstrap-fileupload/bootstrap-fileupload', 'assets/bootstrap-switch/static/stylesheets/bootstrap-switch');
+$this->js = array('assets/bootstrap-fileupload/bootstrap-fileupload.min', 'js/dot.min', 'js/layer/layer');
+?>
+<style>
+    .controls{padding-top:5px;};
+</style>
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="icon-reorder"></i> 项目信息</h3>
+                <div class="box-tool">
+                    <a data-action="close" href="#"><i class="icon-remove"></i></a>
+                </div>
+                <ul  class="nav nav-tabs">
+                    <li class="active"><a href="#project_info" data-toggle="tab">项目详情</a></li>
+                </ul>
+            </div>
+            <div class="tab-content">
+
+                <div class="tab-pane active" id="project_info">
+                    <div class="box-content form-horizontal">
+                        <?php
+                        $form = $this->beginWidget('CActiveForm', array(
+                            'htmlOptions' => array(
+                                'enctype' => 'multipart/form-data',
+                                'class' => 'form-horizontal',
+                            ),
+                        ));
+                        ?>
+                        <!--                输出错误信息  开始-->
+<?php if ($form->errorSummary($model)) { ?>
+                            <div class="alert alert-error">
+                                <button class="close" data-dismiss="alert">×</button>
+                                <p><?php echo $form->errorSummary($model); ?></p>
+                            </div>
+<?php } ?>
+                        <!--                输出错误信息  结束-->
+
+                        
+
+                        <div class="control-group">
+                                <?php echo $form->labelEx($model, 'p_name', array('class' => 'control-label')); ?>
+                            <div class="controls">
+<?php echo $form->textField($model, 'p_name', array('class' => 'input-xlarge', 'placeholder' => '请填写' . $model->getAttributeLabel('p_name'))); ?>
+                                <span class="help-inline"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                                <?php echo $form->labelEx($model, 'p_account', array('class' => 'control-label')); ?>
+                            <div class="controls">
+<?php echo $form->textField($model, 'p_account', array('class' => 'input-xlarge', 'placeholder' => '请填写' . $model->getAttributeLabel('p_account'))); ?>
+                                <span class="help-inline">元</span>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                                <?php echo $form->labelEx($model, 'p_apr', array('class' => 'control-label')); ?>
+                            <div class="controls">
+<?php echo $form->textField($model, 'p_apr', array('class' => 'input-xlarge', 'placeholder' => '请填写' . $model->getAttributeLabel('p_apr'))); ?>
+                                <span class="help-inline">%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <?php echo $form->labelEx($model,'p_dxb',array('class'=>'control-label')); ?>
+                            <div class="controls">
+                                <?php echo $form->textField($model,'p_dxb',array('class'=>'input-xlarge','placeholder'=>'请填写'.$model->getAttributeLabel('p_dxb'))); ?>
+                                <span class="help-inline">（不需定向标请不要填写！）</span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                                <?php echo $form->labelEx($model, 'p_time_limit', array('class' => 'control-label')); ?>
+                            <div class="controls" id="time_limit">
+                                <?php echo $form->dropDownList($model, 'p_time_limit', $project_month_type_arr); ?>
+<?php echo $form->dropDownList($model, 'p_time_limittype', $model->itemAlias('p_time_limittype'), array('style' => 'width:60px;')); ?>
+                                <span class="help-inline">项目的时间</span>
+                            </div>
+                        </div>
+                        
+
+                        <div class="control-group">
+                                <?php echo $form->labelEx($model, 'p_style', array('class' => 'control-label')); ?>
+                            <div class="controls" id="repay_type">
+<?php echo $form->dropDownList($model, 'p_style', $repayment_type_arr); ?>
+                                <span class="help-inline"></span>
+                            </div>
+                        </div>
+						<div class="control-group">
+                                <?php echo $form->labelEx($model, 'p_acc_type', array('class' => 'control-label')); ?>
+                            <div class="controls" id="repay_type">
+								<?php echo $form->dropDownList($model, 'p_acc_type', $model->itemAlias('p_acc_type')); ?>
+                                <span class="help-inline"></span>
+                            </div>
+                        </div>
+                        
+                       
+                        <div class="control-group">
+                                <?php echo $form->labelEx($model, 'p_lowaccount', array('class' => 'control-label')); ?>
+                            <div class="controls">
+<?php echo $form->textField($model, 'p_lowaccount', array('value' => 50, 'class' => 'input-xlarge', 'placeholder' => '请填写' . $model->getAttributeLabel('p_lowaccount'))); ?>
+                                <span class="help-inline">元（0为不限制最小投标金额）</span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                                <?php echo $form->labelEx($model, 'p_mostaccount', array('class' => 'control-label')); ?>
+                            <div class="controls">
+<?php echo $form->textField($model, 'p_mostaccount', array('value' => 0, 'class' => 'input-xlarge', 'placeholder' => '请填写' . $model->getAttributeLabel('p_mostaccount'))); ?>
+                                <span class="help-inline">元（0为不限制最大投标金额）</span>
+                            </div>
+                        </div>
+                        
+                        
+
+                        <div class="control-group">
+                                <?php echo $form->labelEx($model, 'p_content', array('class' => 'control-label')); ?>
+                            <div class="controls">
+                            <?php echo $form->textArea($model, 'p_content', array('class' => 'span4', 'rows' => '5')); ?>
+                            </div>
+                            <?php $this->widget('application.widget.kindeditor.KindEditor', array('target' => array(
+                                    '#ProjectExp_p_content' => array('uploadJson' => $this->createUrl('upload')))));
+                            ?>
+                        </div>
+                        <div class="form-actions">
+                            <input type="submit" class="btn btn-primary" value="提交">
+                            <button type="reset" class="btn">重置</button>
+                        </div>
+<?php $this->endWidget(); ?>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/lcp2p" id="by_day_tmp">
+<?php foreach (LYCommon::GetItemList('project_day_type') as $k => $v) { ?>
+        <option value="<?php echo $v->i_value ?>"><?php echo $v->i_name; ?></option>
+<?php } ?>
+</script>
+<script type="text/lcp2p" id="by_month_tmp">
+<?php foreach (LYCommon::GetItemList('project_month_type') as $k => $v) { ?>
+        <option value="<?php echo $v->i_value ?>"><?php echo $v->i_name; ?></option>
+<?php } ?>
+</script>
+<script type="text/lcp2p" id="style_by_month">
+<?php foreach ($repayment_type_arr as $k => $v) { ?>
+        <option value="<?php echo $k; ?>"><?php echo $v; ?></option>
+<?php } ?>
+</script>
+<script type="text/lcp2p" id="style_by_day">
+<?php foreach ($repayment_type_day as $k => $v) { ?>
+        <option value="<?php echo $k; ?>"><?php echo $v; ?></option>
+<?php } ?>
+</script>
+<script type="text/lcp2p" id="time_limit_month"></script><script type="text/lcp2p" id="repay_type_month"></script>
+<script type="text/lcp2p" id="time_limit_mb">
+    额满即还<input type="hidden" name="Project[p_time_limit]" value="1" style="display;none" /><input type="hidden" name="Project[p_time_limittype]" value="0" style="display;none" /><span class="help-inline">秒标额满即还</span>
+</script>
+<script type="text/lcp2p" id="repay_type_mb">
+    额满即还<input type="hidden" name="Project[p_style]" value="3" style="display;none" /><span class="help-inline">秒标额满即还</span>
+</script>
+<script type="text/javascript"> 
+   $(function() {
+       
+   $("#ProjectExp_p_time_limittype").change(function(){
+		var _type = parseInt($(this).val());
+		if(_type==1){
+			$("#ProjectExp_p_time_limit").html($("#by_day_tmp").html());
+		}else{
+			$("#ProjectExp_p_time_limit").html($("#by_month_tmp").html());
+		}
+	});
+    
+    });
+ </script>   
+

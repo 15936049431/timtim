@@ -1,0 +1,53 @@
+<?php 
+	$this -> page_title = "更多" ;
+?>
+
+<div class="container-fluid">
+		<?php if(!Yii::app()->user->getIsGuest()){ ?>
+		<div class="col-xs-12 more-list" onclick="window.location.href='<?php echo Yii::app()->controller->createUrl("more/message"); ?>'">
+			<div class="pull-left">个人消息</div>
+			<div class="pull-right">></div>
+		</div>
+		<div class="col-xs-12 more-list" onclick="window.location.href='<?php echo Yii::app()->controller->createUrl("usercenter/realname");?>'">
+			<div class="pull-left">实名认证</div>
+			<div class="pull-right">></div>
+		</div>
+		<div class="col-xs-12 more-list" onclick="window.location.href='<?php echo Yii::app()->controller->createUrl("usercenter/email"); ?>'">
+			<div class="pull-left">邮箱认证</div>
+			<div class="pull-right">></div>
+		</div>
+		<div class="col-xs-12 more-list" onclick="window.location.href='<?php echo Yii::app()->controller->createUrl("usercenter/paypass"); ?>'">
+			<div class="pull-left">交易密码</div>
+			<div class="pull-right">></div>
+		</div>
+		<div class="col-xs-12 more-list" onclick="window.location.href='<?php echo Yii::app()->controller->createUrl("usercenter/invite"); ?>'">
+			<div class="pull-left">邀请好友</div>
+			<div class="pull-right">></div>
+		</div>
+		<?php } ?>
+		<!--<div class="col-xs-12 more-list" onclick="window.location.href=''">
+			<div class="pull-left">新闻公告</div>
+			<div class="pull-right">></div>
+		</div>
+		<div class="col-xs-12 more-list" onclick="window.location.href=''">
+			<div class="pull-left">关于我们</div>
+			<div class="pull-right">></div>
+		</div>
+		<div class="col-xs-12 more-list" onclick="window.location.href=''">
+			<div class="pull-left">帮助中心</div>
+			<div class="pull-right">></div>
+		</div-->
+		<?php if(!Yii::app()->user->getIsGuest()){ ?>
+		<div class="col-xs-12 more-list" onclick="window.location.href='<?php echo Yii::app()->controller->createUrl("site/logout");?>'">
+			<div class="pull-left">退出登录</div>
+			<div class="pull-right">></div>
+		</div>
+		<?php } ?>
+	</div>
+	
+	<div class="container-fluid pd-0">
+		<div class="col-xs-12 more-bottom bg-gray">
+			<h2>400-711-5555</h2>
+			<h4>工作时间9:00~17:00</h4>
+		</div>
+	</div>

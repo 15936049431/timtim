@@ -1,0 +1,197 @@
+﻿//Created by Action Script Viewer - http://www.buraks.com/asv
+package view.camera {
+    import flash.events.*;
+    import flash.display.*;
+    import flash.utils.*;
+    import view.ui.*;
+    import view.*;
+    import view.avatar.*;
+    import flash.media.*;
+    import flash.system.*;
+    import flash.geom.*;
+
+    public class CameraComp extends Sprite {
+
+        private var _parent:CutView;
+        private var _videoBg:RectBox;
+        private var _video:Video;
+        private var _camera:Camera;
+        private var _avatar:AvatarArea;
+        private var _nowBMP:Bitmap;
+        private var _t:Timer;
+        private var _tTwo:Timer;
+        private var _tOne:Timer;
+        private var _t100:Timer;
+        private var _t600:Timer;
+        private var _tip:TipB;
+        private var _delayTime:int;// = 0
+        private var _sourceBMD:BitmapData;
+        private var _countDown:MovieClip;
+        private var _currentFrame:int;// = 1
+        private var _blackSP:Shape;
+        private var _nowPicture:Bitmap;
+        public var hasCamera:Boolean;// = false
+        public var cameraBtn:SK_BtnCamera;
+
+        public function CameraComp(_arg1:DisplayObject){
+            this.init(_arg1);
+        }
+        private function init(_arg1:DisplayObject):void{
+            this._parent = (_arg1 as CutView);
+            this._avatar = this._parent.avatarArea;
+            this.addEventListener(Event.ADDED_TO_STAGE, this.onStage);
+            this._videoBg = new RectBox(300, 300);
+            addChild(this._videoBg);
+            if (Camera.names.length){
+                this._camera = Camera.getCamera();
+                this._video = new Video(300, 300);
+                this._video.smoothing = true;
+                this._video.x = (1 + this._video.width);
+                this._video.y = 1;
+                this._video.scaleX = -1;
+                if (this._camera != null){
+                    this.hasCamera = true;
+                    this._camera.setMode(300, 300, 30, false);
+                    this._camera.setQuality(0, 100);
+                    this._camera.addEventListener(StatusEvent.STATUS, this.cameraStatusHandler);
+                    this._video.attachCamera(this._camera);
+                    this.addViewElements();
+                    this._t = new Timer(100);
+                    this._t.addEventListener(TimerEvent.TIMER, this.checkCamera);
+                    this._t.start();
+                };
+            } else {
+                this.showTip();
+            };
+        }
+        private function onStage(_arg1:Event):void{
+            this.removeEventListener(Event.ADDED_TO_STAGE, this.onStage);
+        }
+        private function showTip():void{
+            if (this._tip == null){
+                this._tip = new TipB();
+                this._tip.x = (this._tip.y = 1);
+            };
+            addChild(this._tip);
+        }
+        private function removeTip():void{
+            if (((!((this._tip == null))) && (this.contains(this._tip)))){
+                removeChild(this._tip);
+            };
+        }
+        private function cameraStatusHandler(_arg1:StatusEvent):void{
+            if (_arg1.code == "Camera.Muted"){
+                addChild(this._videoBg);
+                this.showTip();
+                this._t.reset();
+                this.cameraBtn.visible = false;
+            } else {
+                this.removeTip();
+                this._t.start();
+            };
+        }
+        private function checkCamera(_arg1:TimerEvent):void{
+            if (this._camera.currentFPS > 0){
+                this.removeTip();
+                this.cameraBtn.visible = true;
+            } else {
+                if (this._delayTime >= 30){
+                    this.showTip();
+                };
+                this._delayTime++;
+                this.cameraBtn.visible = false;
+            };
+        }
+        private function addViewElements():void{
+            this.cameraBtn = new SK_BtnCamera();
+            this.cameraBtn.x = 96;
+            this.cameraBtn.y = 345;
+            this.cameraBtn.addEventListener(MouseEvent.CLICK, this.beginCountDown);
+            addChildAt(this._videoBg, 0);
+            addChildAt(this._video, 1);
+            addChild(this.cameraBtn);
+        }
+        private function newSecurityPanel(_arg1:MouseEvent):void{
+            Security.showSettings(SecurityPanel.PRIVACY);
+        }
+        private function beginCountDown(_arg1:MouseEvent):void{
+            this.cameraBtn.removeEventListener(MouseEvent.CLICK, this.beginCountDown);
+            this.cameraBtn.mouseEnabled = false;
+            this.cameraBtn.alpha = 0.5;
+            this._tTwo = ((this._tTwo) || (new Timer(1000, 2)));
+            this._currentFrame = 1;
+            this._tTwo.addEventListener(TimerEvent.TIMER, this.changeCountDown);
+            this._tTwo.addEventListener(TimerEvent.TIMER_COMPLETE, this.showFrameOne);
+            this._tTwo.reset();
+            this._tTwo.start();
+            this._countDown = ((this._countDown) || ((new SK_CountDown() as MovieClip)));
+            this._countDown.x = 69;
+            this._countDown.y = 74;
+            this._countDown.gotoAndStop(1);
+            addChild(this._countDown);
+        }
+        private function changeCountDown(_arg1:TimerEvent):void{
+            this._currentFrame++;
+            this._countDown.gotoAndStop(this._currentFrame);
+        }
+        private function showFrameOne(_arg1:TimerEvent):void{
+            this._countDown.gotoAndStop(this._currentFrame);
+            this._tTwo.removeEventListener(TimerEvent.TIMER, this.changeCountDown);
+            this._tTwo.removeEventListener(TimerEvent.TIMER_COMPLETE, this.showFrameOne);
+            this._tOne = new Timer(1000);
+            this._tOne.addEventListener(TimerEvent.TIMER, this.showBlack);
+            this._tOne.reset();
+            this._tOne.start();
+        }
+        private function showBlack(_arg1:TimerEvent):void{
+            this._tOne.removeEventListener(TimerEvent.TIMER, this.showBlack);
+            if (this._blackSP == null){
+                this._blackSP = new Shape();
+                this._blackSP.graphics.beginFill(0x222222);
+                this._blackSP.graphics.drawRect(1, 1, 300, 300);
+                this._blackSP.graphics.endFill();
+            };
+            addChild(this._blackSP);
+            this._t100 = ((this._t100) || (new Timer(100)));
+            this._t100.addEventListener(TimerEvent.TIMER, this.showNowScene);
+            this._t100.start();
+        }
+        private function showNowScene(_arg1:TimerEvent):void{
+            this._t100.removeEventListener(TimerEvent.TIMER, this.showNowScene);
+            this._t100.reset();
+            this.getAvatarBMD();
+            this._t600 = ((this._t600) || (new Timer(600)));
+            this._t600.addEventListener(TimerEvent.TIMER, this.changeScene);
+            this._t600.start();
+        }
+        private function getAvatarBMD():void{
+            this._sourceBMD = ((this._sourceBMD) || (new BitmapData(this._video.width, this._video.height, true)));
+            var _local1:Matrix = new Matrix();
+            _local1.scale(-1, 1);
+            _local1.translate(this._video.width, 0);
+            this._sourceBMD.draw(this._video, _local1);
+            this._nowPicture = ((this._nowPicture) || (new Bitmap()));
+            this._nowPicture.bitmapData = this._sourceBMD;
+            addChild(this._nowPicture);
+        }
+        private function changeScene(_arg1:TimerEvent):void{
+            this._t600.removeEventListener(TimerEvent.TIMER, this.changeScene);
+            this._t600.reset();
+            this.cameraBtn.addEventListener(MouseEvent.CLICK, this.beginCountDown);
+            this.cameraBtn.mouseEnabled = true;
+            this.cameraBtn.alpha = 1;
+            removeChild(this._countDown);
+            removeChild(this._nowPicture);
+            removeChild(this._blackSP);
+            this._parent.avatarModel.bmd = this._sourceBMD;
+            this._parent.avatarModel.type = 1;
+            this._parent.localPicArea.visible = (this._parent.avatarArea.visible = true);
+            this._parent.browseComp.label.visible = true;
+            this._parent.splitLines.visible = true;
+            this.visible = false;
+            this._parent.saveBtn.visible = (this._parent.cancleBtn.visible = true);
+            this._parent.cameraBtn.mouseEnabled = true;
+        }
+
+    }
+}//package view.camera 

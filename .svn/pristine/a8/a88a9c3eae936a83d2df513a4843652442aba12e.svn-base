@@ -1,0 +1,33 @@
+	<div class="container-fluid">
+		<div class="col-xs-12 project-search">
+			<ul>
+				<li><a href="<?php echo Yii::app()->controller->createUrl("usercenter/order"); ?>">投资明细</a></li>
+				<li><a href="<?php echo Yii::app()->controller->createUrl("usercenter/orderon"); ?>">正在投标</a></li>
+				<li><a href="<?php echo Yii::app()->controller->createUrl("usercenter/haverepay"); ?>">已收明细</a></li>
+				<li><a href="<?php echo Yii::app()->controller->createUrl("usercenter/waitrepay"); ?>">未收明细</a></li>
+			</ul>
+		</div>
+	</div>
+	
+	<div class="container-fluid pd-0 bg-gray">
+		<?php foreach($project_order as $k=>$v){ ?>
+			<div class="row mg-0 project">
+				<div class="col-xs-3 project_left">
+					<p><?php echo $v->project->p_name;?></p>
+				</div>
+				<div class="col-xs-6 project_center">
+					<p>借款金额(元):<?php echo $v->project->p_account;?></p>
+					<p>
+						<span class="exp_span"><font class="exp"><?php echo $v->project->p_apr;?></font>%</span>
+						<span class="month_span pdl-5"><font class="month"><?php echo $v->project->p_time_limit; ?></font><?php echo ($v->project->p_time_limittype==1) ? "天" : "个月" ;?></span>
+						<span class="repay pdl-5"><?php echo LYCommon::GetItem_of_value($v->project->p_style,'project_repay_type'); ?></span>
+					</p>
+				</div>
+				<div class="col-xs-3 project_right">
+					<button type="button" class="btn btn-sm btn-default project_btn" ">投资<?php echo $v->p_money; ?>元</button>
+					<p><?php echo $v->project->p_account_yes/$v->project->p_account*100<100? LYCommon::sprintf_diy_9($v->project->p_account_yes/$v->project->p_account*100):100; ?>%</p>
+				</div>
+			</div>
+		<?php } ?>
+		
+	</div>

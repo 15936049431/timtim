@@ -1,0 +1,101 @@
+					<div class="user_money_main">
+                        <dl class="user_money_tab clear">
+                            <dd><a href="<?php echo Yii::app()->controller->createUrl("usercenter/recharge"); ?>">充值</a></dd>
+                            <dd class="sel"><a href="#">提现</a></dd>
+                        </dl>
+                        <?php $form = $this->beginWidget('CActiveForm',array(
+    						'htmlOptions'=>array('name'=>'cash_form','onsubmit'=>'return check();'),
+    					)); ?>
+                            <table>
+                                <tr>
+                                    <td>选择银行卡：</td>
+                                    <td>
+                                        <select name="AssetsCash[c_bank]" style="padding:10px;width:200px;">
+                                        	<?php foreach($bank_list as $k=>$v){ ?>
+	                                            <option value="<?php echo $v->b_id; ?>"><?php echo LYCommon::half_replace($v->b_cardNum); ?></option>
+	                                        <?php } ?>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>真实姓名：</td>
+                                    <td><?php echo $user_info->real_name; ?></td>
+                                </tr>
+                                <tr>
+                                    <td>可提现金额：</td>
+                                    <td><?php echo $user_assets->real_money; ?>元</td>
+                                </tr>
+                                <tr>
+                                    <td><i>*</i>提现金额：</td>
+                                    <td>
+                                        <?php echo $form->textField($model,'c_money',array('placeholder'=>'请填写'.$model->getAttributeLabel('c_money'),"onkeyup"=>"value = value.replace(/[^0-9.]/g, '');")); ?><span class="i">元</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><i>*</i>交易密码：</td>
+                                    <td>
+                                        <input type="password" name="paypassword" id="paypassword" placeholder="请填写交易密码" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>实际到账金额：</td>
+                                    <td><i id="realmoney">0.00</i>元</td>
+                                </tr>
+                                <tr>
+                                    <td>验证码：</td>
+                                    <td><?php echo $form->textField($model,'authcode',array('class'=>'code','placeholder'=>'请填写验证码',"onkeyup"=>"value = value.replace(/[^a-zA-Z]/g, '')")); ?>
+                                    	<?php $this->widget('CCaptcha',array('showRefreshButton'=>false,'clickableImage'=>true,'imageOptions'=>array('alt'=>'点击换图','title'=>'看不清楚?请点击刷新验证码','style'=>'vertical-align:middle;cursor:pointer;'))); ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td class="clear">
+                                        <input type="submit" class="btn" value="申请提现" />
+                                        <!--span class="i ml20">预计到账时间：2015-11-24（二个工作日）</span-->
+                                    </td>
+                                </tr>
+                            </table>
+                        <?php $this->endWidget(); ?>
+                        <div class="user_mone_desc mt20">
+                        	<p><i>注：1、请输入您要取出金额,我们将在1至3个工作日(国家节假日除外)之内将钱转入您网站上填写的银行帐号。 </i></p>
+                            <p><i>2、如你急需要把钱转到你的帐号或者24小时之内网站未将钱转入到你的银行帐号,请联系客服中心。</i></p>
+                            <p><i>3、确保您的银行帐号的姓名和您的网站上的真实姓名一致。 </i></p>
+                            <p><i>4、在钱打到您帐号时会发一封站内信通知你。 </i></p>
+                            <p><i>5、每笔提现金额至少50元以上。</i></p>
+                            <p><i>6、每笔提现金额最高不能超过50000元以上。（如有变动请关注平台公告，拥有最终解释权），有疑问请联系在线客服。</i></p>
+                        </div>
+                    </div>
+<script>
+	$("#AssetsCash_c_money").on("keyup",function(){
+		var _money = $(this).val();
+		$.post("<?php echo Yii::app()->controller->createUrl("usercenter/cashfee"); ?>?money="+_money,{},function(result){
+			var _fee = result;
+			var _real = (_money - _fee).toFixed(2);
+			//$("#fee").html(_fee);
+			$("#realmoney").html(_real);
+		});
+	});
+	function check(){
+		if($("#AssetsCash_c_money").val()<50){
+			pointererror('提现最小50元',6);
+			return false;
+		}else if($("#paypassword").val()==""){
+			pointererror('交易密码不可为空',6);
+			return false;
+		}else if($("#AssetsCash_authcode").val()==""){
+			pointererror('验证码不可为空',6);
+			return false;
+		}
+		return true;
+	}
+</script>
+<?php if(!empty($message)){ ?>
+<script>
+	pointererror('<?php echo $message; ?>', 6);
+</script>
+<?php } ?>
+<?php if(!empty($success)){ ?>
+<script>
+	pointermsg('<?php echo $success['0']; ?>','<?php echo $success['1']; ?>','<?php echo $success['2']; ?>','<?php echo $success['3']; ?>');  
+</script>
+<?php } ?>

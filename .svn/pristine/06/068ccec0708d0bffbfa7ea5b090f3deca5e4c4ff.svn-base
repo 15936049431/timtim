@@ -1,0 +1,104 @@
+<?php
+    $this -> page_title = '投资详情';
+    $this -> css = array("lrtk","prettyPhoto","layout");
+    $this -> js = array("jquery.min","jquery.SuperSlide","jquery.prettyphoto","lrtk");
+?>
+<!--主体-->  
+<div id="cheinfo" >
+    <div id="touzhi"><h2><?php echo $project_now->p_name; ?><storng>标的编号：<?php echo $project_now->p_id; ?></storng></h2>
+    <div class="info">
+       <dl>
+      <dd>标的总额(元)</dd>
+      <dt>¥<?php echo $project_now->p_account; ?></dt>
+      <dd>保障方式： 本息保障</dd>
+      <dd>还款方式： 体验金收回，收益可提现</dd>
+      </dl>
+      
+      <dl>
+      <dd>年化收益率</dd>
+      <dt><?php echo $project_now->p_apr; ?>%</dt>
+      <dd>剩余时间 ：<span id="timer">一直有效</span></dd>
+      <dd>发布时间：  <?php echo LYCommon::subtime($project_now->p_addtime,2); ?></dd>
+      </dl>
+      
+
+      
+      <dl>
+      <dd>期限(<?php echo ($project_now->p_time_limittype==1)?"天":"月"; ?>)</dd>
+      <dt><?php echo $project_now->p_time_limit; ?></dt>
+      </dl>
+        
+
+      <div class="info-right" >
+       <dl >
+         <dt>剩余可投<span> ¥ <?php echo LYCommon::sprintf_diy_9($project_now->p_account-$project_now->p_account_yes); ?></span></dt>
+         <?php if(!Yii::app()->user->getIsGuest()){ ?>
+         <dd> <p>体验金余额</p><p> ¥ <?php echo !empty($user_assets)?$user_assets->exp_money-$user_assets->exp_use_money:0; ?></p></dd>
+         <dd>
+         	<?php if($project_now->p_account>$project_now->p_account_yes){ ?>
+                    <a href="<?php echo Yii::app()->controller->createUrl("project/exp_pay_invest",array("id"=>$project_now->p_id)); ?>" class="btn-jyou">立即加油</a>
+                <?php }else{ ?>
+                    <a href="javascript:;" class="btn-jyou-hui">油满待出发</a>
+                <?php } ?>
+         </dd>
+         <?php }else{ ?>
+         <dd> <p><a href="<?php echo Yii::app()->controller->createUrl("site/login"); ?>" style="background:url();margin-top:15px;font-size:16px;">请您先登录</a></p><p></p></dd>
+         <dd></dd>
+         <?php } ?>
+       </dl>
+      </div>
+    </div>
+    
+
+ </div>
+ 
+ </div>
+ <div id="cheinfo_tab">
+  <div class="slideTxtBox">
+	<div class="hd tab">
+		<ul>
+			<li>项目详情</li>
+			<li>投资记录</li>
+		</ul>
+	</div>
+	<div class="bd">
+		<ul class="infoList">
+			<div class="div_tab">  
+		 		<div id="info" >
+     				<?php echo $project_now->p_content; ?>
+      			</div>
+ 			</div>
+		</ul>
+		
+		<ul class="infoList">
+			<div class="cz_info" style="width:100%">
+               <table style="float: left;margin-left: 15px;width: 100%;margin-top: 10px;margin-left:0px;">
+				<tr class="cz_tit">
+		          <th>序号</th>
+		          <th>投标人</th>
+		          <th>当前年利率</th>
+		          <th>投标金额</th>
+		          <th>有效金额</th>
+		          <th>投标时间</th>
+				</tr>
+				<?php foreach($order_list as $k=>$v){ ?>
+					<tr>
+					   <td><?php echo $k+1; ?></td>
+                                           <td><?php if(isset($v->user)){ echo LYCommon::half_replace_utf8($v->user->user_name);} ?></td>
+					   <td><?php echo $v->project->p_apr; ?>%</td>
+					   <td>¥<?php echo $v->p_money; ?></td>
+					   <td>¥<?php echo $v->p_realmoney; ?></td>  
+					   <td><?php echo LYCommon::subtime($v->p_addtime,3); ?></td>
+					</tr>
+				<?php } ?>
+				</table>
+			</div>
+		</ul>
+		
+		
+	</div>	  
+<script type="text/javascript">jQuery(".slideTxtBox").slide({effect:"left",trigger:"click"});
+
+</script>
+ </div>	 
+</div> 

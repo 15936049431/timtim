@@ -1,0 +1,14 @@
+﻿//Created by Action Script Viewer - http://www.buraks.com/asv
+package events {
+    import flash.events.*;
+
+    public class UploadEvent extends Event {
+
+        public static const IMAGE_CHANGE:String = "imageChange";
+        public static const IMAGE_INIT:String = "imageInit";
+
+        public function UploadEvent(_arg1:String){
+            super(_arg1);
+        }
+    }
+}//package events 

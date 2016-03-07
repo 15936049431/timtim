@@ -1,0 +1,45 @@
+
+function msg(msg,url){
+	layer.open({
+	   content: msg,
+	   style: 'background-color:#ea544a; color:#fff; border:none;',
+	   time: 2,
+	   success:function(){
+		   if(url!=""){
+			   setTimeout(function(){
+					window.location.href=url;
+				},2000);
+		   }
+	   }
+	});
+}
+
+
+function openwindow(html,height){
+	layer.open({
+	    type: 1,
+	    content: html,
+	    style: 'width:90%; height:'+height+'px; padding:10px; background-color:white; color:black; border:none;'
+	});
+}
+
+function onload(){
+	layer.open({
+	    type: 2,
+	    content: '加载中'
+	});
+}
+
+$(function(){
+	loadbanner();
+});
+
+function loadbanner(){
+    var swiper = new Swiper('.swiper-container', {
+        pagination: '.swiper-pagination',
+        paginationClickable: true,
+        nextButton: '.swiper-button-next',
+        prevButton: '.swiper-button-prev',
+        spaceBetween: 30
+    });
+}

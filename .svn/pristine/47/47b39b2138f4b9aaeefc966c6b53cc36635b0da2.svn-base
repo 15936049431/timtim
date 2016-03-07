@@ -1,0 +1,44 @@
+<?php
+$this->css = array('erji');
+$this->url = Yii::app()->controller->createUrl("menu/ilove") ;
+function getPic($content) {
+	preg_match_all("%<img src=['|\"]([^('|\")]*).*>%", $content, $m);
+	if (!empty($m[1])) {
+		$src = $m[1][0];
+		return $src;
+	} else {
+		return '';
+	}
+}
+?>
+<section class="ckhd_con">
+    <?php $i=0; ?>
+    <?php foreach($article_list as $k => $v){ ?>
+    <?php if($i++ < 2){ ?>
+  <div class="content" onclick="window.location.href='<?php echo Yii::app()->controller->createUrl('article/view', array('id' => $v->article_id)); ?>'">
+      <div class="date">
+	  <?php echo date('Y-m-d', $v->add_time); ?>
+	  </div>
+	  <div class="con_bg">
+	     <div class="con_tit">
+		   <span><?php echo $v->article_title; ?></span><br><?php echo LYCommon::subtime($v->add_time,4); ?>
+		 </div>
+		 <div class="con_img">
+		   <img src="<?php echo SITE_UPLOAD.'article/'.$v->article_pic; ?>">
+		 </div>
+		 <div class="con_more">
+		   <a href="<?php echo Yii::app()->controller->createUrl('article/view', array('id' => $v->article_id)); ?>">查看全文</a>
+		 </div>
+	  </div>
+  </div>
+    <?php }else{ ?>
+   <div class="content" onclick="window.location.href='<?php echo Yii::app()->controller->createUrl('article/view', array('id' => $v->article_id)); ?>'">
+	  <div class="con_bg">
+	     <div class="con_tit">
+		   <span><?php echo $v->article_title; ?></span><br><?php echo LYCommon::subtime($v->add_time,2); ?>
+		 </div>
+	  </div>
+  </div>
+    <?php } ?>
+    <?php } ?>
+</section>

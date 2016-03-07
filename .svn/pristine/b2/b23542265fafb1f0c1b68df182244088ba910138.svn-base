@@ -1,0 +1,206 @@
+<?php
+
+class SumItController extends BController {
+
+    public function actionIndex() {
+        $this->render('index');
+    }
+
+    public function actionsumbill() {
+        $connection = Yii::app()->db;
+        $sql = "select sum(b_money) as money,b_itemtype as type from ly_bill group by b_itemtype;";
+        $user_all = $connection->createCommand($sql)->queryAll();
+        $item = LYCommon::GetItemList('assets_type');
+        $itemarr = array();
+        foreach ($item as $key => $value) {
+            $itemarr[$value->i_nid]['name'] = $value->i_name;
+            $itemarr[$value->i_nid]['money'] = 0;
+        }
+        foreach ($user_all as $key => $value) {
+			if(!empty($value['type'])){
+				$itemarr[$value['type']]['money']+=$value['money'];
+			}
+        }
+        $this->render("sumbill", array(
+            'itemarr' => $itemarr,
+        ));
+    }
+
+    public function actioneveryday() {
+        $model = Everyday::model();
+        $criteria = new CDbCriteria;
+        if (isset($_GET['outfile_excel'])) {
+            Yii::import('application.extensions.phpexcel.JPhpExcel');
+            $list = $model->findAll($criteria);
+            $data = array(
+                array(
+                    "ID", "日期", "充值","充值人数","充值次数","提现","提现人数","提现次数","投标","投标人数","投标次数","注册人数","还款总额","还款笔数","利息管理费","提现手续费","添加时间", "添加IP", "最后一次操作时间",
+                ),
+            );
+            foreach ($list as $k => $v) {
+                $data[] = array(
+                    $k + 1,
+                    $v->date,
+                    $v->recharge,
+                    $v->recharge_user,
+					$v->recharge_num,
+					$v->cash,
+					$v->cash_user,
+					$v->cash_num,
+					$v->order,
+					$v->order_user,
+					$v->order_num,
+					$v->register_user,
+					$v->repay_account,
+					$v->repay_num,
+					$v->manager_fee,
+					$v->cash_fee,
+                    LYCommon::subtime($v->addtime, 2),
+                    $v->addip,
+                    LYCommon::subtime($v->lasttime, 2),
+                );
+            }
+
+            $xls = new JPhpExcel('UTF-8', false, '每日进出');
+            $xls->addArray($data);
+            $xls->generateXML('everyday');
+            die;
+        }
+        $total_count = $model->count($criteria);
+        $page = new Pagination($total_count, 10);
+        $page_list = $page->fpage(array(4, 5, 6, 3, 7,0,2));
+        $page_list = $total_count <= $page->limitnum ? "" : $page_list;
+        $criteria->limit = $page->limitnum;
+        $criteria->offset = $page->offset;
+        $criteria->order = " lasttime DESC";
+        $list = $model->findAll($criteria);
+        $this->render('everyday', array(
+            'model' => $model,
+            'list' => $list,
+            'page_list' => $page_list,
+        ));
+    }
+
+    public function actionList() {
+        $everyuser_model =Everyuser::model();
+        $user_model=User::model();
+        $criteria = new CDbCriteria;
+        $criteria->with="user";
+        if(isset($_GET['User'])){
+        	$user_model->attributes=$_GET['User'];
+        }
+        $criteria->compare('user.user_phone',$user_model->user_phone,true);
+        $criteria->compare('user.real_name',$user_model->real_name,true);
+        $criteria->compare('user.is_realname_check',1);
+		$start_time = (isset($_GET['start_time']) && $_GET['start_time'] != "") ? strtotime($_GET['start_time']) : 0;
+        $end_time = (isset($_GET['end_time']) && $_GET['end_time'] != "") ? strtotime($_GET['end_time'].'23:59:59') : time();
+        $order_time = (isset($_GET['order_time']) && $_GET['order_time'] != "") ? strtotime($_GET['order_time']) : 0;
+        $order_end_time = (isset($_GET['order_end_time']) && $_GET['order_end_time'] != "") ? strtotime($_GET['order_end_time'].'23:59:59') : 0;
+        $criteria->addCondition("t.addtime>'{$start_time}' and t.addtime<'{$end_time}'");
+        $criteria->addCondition("t.user_first_order >'{$order_time}'");
+        if(!empty($order_end_time)){
+            $criteria->addCondition("t.user_first_order <'{$order_end_time}'");
+        }
+        
+        if(isset($_GET['outfile_excel'])){
+        	Yii::import('application.extensions.phpexcel.JPhpExcel');
+			$criteria->order = " user.register_time DESC";
+        	$list = $everyuser_model->findAll($criteria);
+        	$data = array(
+        			array(
+        					"ID", "用户名", "手机号","真实姓名", "充值总额", "提现总额", "投标总额", "提现手续费","已收利息","代收利息","投标笔数","充值次数","提现次数","收款总额","可用总额","用户总额","首次投标","注册时间"
+        			),
+        	);
+        	foreach ($list as $k => $v) {
+        		$data[] = array(
+                            $v->user->user_id,
+                            $v->user->user_name,
+                            $v->user->user_phone,
+                            $v->user->real_name,
+                            $v->user_recharge,
+                            $v->user_cash,
+                            $v->user_order,
+                            $v->user_cashfee,
+                            $v->assets->have_interest,
+                            $v->assets->wait_interest,
+                            $v->user_order_num,
+                            $v->user_recharge_num,
+                            $v->user_cash_num,
+                            $v->user_haverepay,
+                            $v->assets->total_money,
+                            $v->assets->real_money,
+                            LYCommon::subtime($v->user_first_order,1),
+                            LYCommon::subtime($v->addtime,1), 
+        		);
+        	}
+        	
+        	$xls = new JPhpExcel('UTF-8', false, '用户资金详情');
+        	$xls->addArray($data);
+        	$xls->generateXML('everyday');
+        	die;
+        }
+        $total_count = $everyuser_model->count($criteria);
+        $page = new Pagination($total_count, 10);
+        $page_list = $page->fpage(array(4, 5, 6, 3, 7,0,2));
+        $page_list = $total_count <= $page->limitnum ? "" : $page_list;
+        $criteria->limit = $page->limitnum;
+        $criteria->offset = $page->offset;
+        $criteria->order = " user.register_time DESC";
+        $list = $everyuser_model->findAll($criteria);
+        $this->render("list",array(
+        	"model"=>$everyuser_model,
+        	"list"=>$list,
+        	"page_list"=>$page_list,
+        	"user_model"=>$user_model,
+        ));
+    }
+
+    public function actionDetail($userId = null) {
+        $user = User::model()->findByPk($userId);
+        $everyuser = Everyuser::model()->findByPk($userId);
+        $user_assets = Assets::model()->findByPk($userId);
+        $connection = Yii::app()->db;
+        $bank_sql = "select count(*) as num,sum(p1.c_money) as money,p2.i_name,p1.c_cardNum from ly_assets_cash as p1 left join ly_item as p2 on p1.c_bank=p2.i_id where p1.c_user_id='{$userId}' and p1.c_status=1 group by p1.c_cardNum order by money asc limit 1" ;
+        $bank_result = $connection->createCommand($bank_sql)->queryRow();
+        
+        $user_recharge_model = AssetsRecharge::model();
+        $user_recharge = $user_recharge_model->findAll(array("limit"=>"20","condition"=>"r_user_id='{$userId}'","order"=>"r_addtime desc"));
+        
+        $user_cash_model = AssetsCash::model();
+        $user_cash = $user_cash_model->findAll(array("limit"=>"20","condition"=>"c_user_id='{$userId}'","order"=>"c_addtime desc"));
+        
+        $bill_model = Bill::model();
+        $user_bill = $bill_model->findAll(array("limit"=>"20","condition"=>"user_id='{$userId}'","order"=>"b_time desc"));
+        
+        $projectrepay_model = ProjectRepay::model();
+        $criteria = new CDbCriteria;
+        $criteria -> join = " left join {{project}} as t1 on t.p_project_id=t1.p_id";
+        $criteria -> limit = " 20 ";
+        $criteria -> order = " t.p_repaytime ASC "; 
+        $criteria->compare('t1.p_user_id',$userId);
+        $user_repay = $projectrepay_model->findAll($criteria);
+        
+        $projectcollect_model = ProjectCollect::model();
+        $criterias = new CDbCriteria;
+        $criterias -> join = 'left join {{project_order}} as t1 on t.p_project_order = t1.p_id';
+        $criterias->compare("t1.p_user_id",$userId);
+        $criterias -> limit = "20 ";
+        $criterias -> order = " t.p_repaytime ASC ";
+        $user_collect = $projectcollect_model->findAll($criterias);
+        
+        $this->render("detail",array(
+        	"user"=>$user,
+        	"everyuser"=>$everyuser,
+        	"user_assets"=>$user_assets,
+        	"bank_result"=>$bank_result,
+        	"user_recharge"=>$user_recharge,
+        	"recharge_model"=>$user_recharge_model,
+        	"user_cash"=>$user_cash,
+        	"cash_model"=>$user_cash_model,
+        	"user_bill"=>$user_bill,
+        	"user_repay"=>$user_repay,
+        	"user_collect"=>$user_collect,
+        ));
+    }
+
+}

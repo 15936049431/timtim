@@ -1,0 +1,80 @@
+body{font-family:"Microsoft YaHei"}
+/*login*/
+.navbar h4{text-align:center;width:100%;}
+.navbar .close{cursor:pointer;}
+.bg-none{background:none;}
+.pd-20{padding-top:10px;}
+.pd-10{padding-top:10px;}
+.pdl-5{padding-left:5px;}
+.pd-0{padding-left:0px;padding-right:0px;}
+.mg-0{margin:0px;}
+.bg-phone{background:url(../images/phone.png) center center no-repeat;background-size: cover;}
+.bg-gray{background:#eeeeee;}
+.bg-gray1{background:#ededf5;}
+.login-btn{width:100%;border:none;margin-top:15px;}
+.sendPhoneCode{cursor:pointer;border:none;}
+.sendPhoneCode:hover{background:#d9534f;color:white;}
+
+/*banner*/
+.swiper-container {width: 100%;height: 100%;}
+.swiper-slide {text-align: center;background: #fff;height:175px;overflow:hidden;}
+div.flicking_con{position:absolute;top:150px;left:50%;z-index:999;width:300px;height:21px;margin:0 0 0 -50px;}
+div.flicking_con a{float:left;width:21px;height:21px;margin:0;padding:0;background:url('../images/btn_main_img.png') 0 0 no-repeat;display:block;text-indent:-1000px}
+div.flicking_con a.on{background-position:0 -21px}
+
+/*index*/
+.img-none{background:none;border:none;margin:0px;}
+.img-font{width:100%;text-align:center;}
+.project{height:100px;width:100%;padding-top:5px;background:white;}
+.project_left{background:#f6f6fa;height:100%;padding:0px;margin:0px;}
+.project_left p{font-size:18px;width:100%;line-height:250%;padding:0;margin:0;text-align:center;padding-top:15px;font-weight:bold;}
+.project_center{height:100%;}
+.project_center p{width:100%;text-align:left;font-size:14px;padding:0;margin:0;padding-top:7px;}
+.project_center p span .exp{font-size:16px;color:red;}
+.project_center p span .month{font-size:16px;}
+.project_right{height:100%;padding:0;}
+.project_right p{width:100%;text-align:center;font-size:10px;padding:0;margin:0;padding-top:15px;color:#b8bdc0;}
+.project_btn{width:100%;margin-top:15px;}
+.footer{width:100%;height:65px;border-top:#e3e3e3 2px solid;margin:0 auto;position:fixed;bottom:0;background:white;}
+.footer-ul{list-style:none;width:100%;height:60px;padding-top:15px;padding-left:0px;}
+.footer-ul li{width:25%;height:60px;text-align:center;cursor:pointer;float:left;}
+.footer-ul li:hover{background:red;}
+.footer-ul li.home{background:url(../images/home.png) top center no-repeat;background-size:30px;}
+.footer-ul li.home:hover,li.home.on{background:url(../images/home_1.png) top center no-repeat;background-size:30px;color:#d20307;}
+.footer-ul li.list{background:url(../images/list.png) top center no-repeat;background-size:30px;}
+.footer-ul li.list:hover,li.list.on{background:url(../images/list_1.png) top center no-repeat;background-size:30px;color:#d20307;}
+.footer-ul li.user{background:url(../images/user.png) top center no-repeat;background-size:30px;}
+.footer-ul li.user:hover,li.user.on{background:url(../images/user_1.png) top center no-repeat;background-size:30px;color:#d20307;}
+.footer-ul li.more{background:url(../images/more.png) top center no-repeat;background-size:30px;}
+.footer-ul li.more:hover,li.more.on{background:url(../images/more_1.png) top center no-repeat;background-size:30px;color:#d20307;}
+.footer-ul li p{width:100%;line-height:100%;padding-top:35px;font-size:12px;}
+
+/*产品列表*/
+.project-search{font-size:14px;border-bottom:1px solid #eeeeee;padding:0;}
+.project-search ul{list-style:none;margin:0px;padding:0px;}
+.project-search ul li {float:left;padding:10px;}
+
+/*用户中心*/
+.center-top h4{text-align:center;color:#d20307;font-weight:bold;}
+.center-top h5{text-align:center;}
+.center-p p{text-align:center;overflow:hidden;width:100%;padding-top:10px;}
+.bd-1{border-top:1px solid #eeeeee;border-right:1px solid #eeeeee;}
+
+/*借款详情*/
+.project-info h3,h4{text-align:center;}
+.project-info h3{font-size:34px;color:#d20307;}
+.project-info-bottom{padding:10px;text-indent:5px;}
+.project-info-footer{width:100%;height:40px;position:fixed;bottom:0;background:white;}
+
+/*更多*/
+.more-list{height:50px;line-height:50px;border-bottom:1px solid #eeeeee;cursor:pointer;}
+.more-bottom{padding:50px;text-align:center;}
+.message-list{border-bottom:1px solid #eeeeee;}
+.message-list a{color:black;}
+.message-list h4{text-align:left;font-weight:bold;}
+.message-list .content{color:#97999b;}
+.lh-25{line-height:25px;}
+
+.bank_one_bg{width:100%;height:100px;background:#e1617d;border-radius:10px 10px;color:white;}
+.bank_one{width:80%;height:80px;padding:10px 10% 10px 10%;}
+.bank_one p{line-height:20px;}

@@ -1,0 +1,148 @@
+<?php
+
+
+class SmsController extends BController{
+    public function actionList(){
+        $model = Sms::model();
+        $criteria = new CDbCriteria;
+        $total_count = $model->count($criteria);
+        $page = new Pagination($total_count,10);
+        $page_list = $page->fpage(array(3,4,5,6,7));
+        $criteria -> limit = $page->limitnum;
+        $criteria -> offset = $page->offset;
+        $criteria -> order = 'send_time DESC';
+        $list = $model->findAll($criteria);
+        $page_list = $total_count<=$page->limitnum?"":$page_list;
+        $this -> render('list',array(
+            'model'=>$model,
+            'list'=>$list,
+            'page_list'=>$page_list,
+        ));
+    }
+    
+    
+    public function actionList_code(){
+        $model = Code::model();
+        $criteria = new CDbCriteria;
+        $total_count = $model->count($criteria);
+        $page = new Pagination($total_count,10);
+        $page_list = $page->fpage(array(3,4,5,6,7));
+        $criteria -> limit = $page->limitnum;
+        $criteria -> offset = $page->offset;
+        $criteria -> order = 'add_time DESC';
+        $list = $model->findAll($criteria);
+        $page_list = $total_count<=$page->limitnum?"":$page_list;
+        $this -> render('list_code',array(
+            'model'=>$model,
+            'list'=>$list,
+            'page_list'=>$page_list,
+        ));
+    }
+    
+    public function actionList_smstmp(){
+        $model = Smstmp::model();
+        $criteria = new CDbCriteria;
+        $total_count = $model->count($criteria);
+        $page = new Pagination($total_count,10);
+        $page_list = $page->fpage(array(3,4,5,6,7));
+        $criteria -> limit = $page->limitnum;
+        $criteria -> offset = $page->offset;
+        $list = $model->findAll($criteria);
+        $page_list = $total_count<=$page->limitnum?"":$page_list;
+        $this -> render('list_smstmp',array(
+            'model'=>$model,
+            'list'=>$list,
+            'page_list'=>$page_list,
+        ));
+    }
+    
+    
+    public function actionSend_sms(){
+        $model = new Sms;
+        
+        $smstmp_model = Smstmp::model();
+        $smstmp_lsit = $smstmp_model ->findAll();
+        
+        if(isset($_POST['Sms'])){
+            $model -> attributes = $_POST['Sms'];
+            $model -> sms_id = LYCommon::getInsertID();
+            $model -> get_user_id = 0;
+            $model -> sms_type = 1;
+            $model -> send_type = 0;
+            $model -> timing = 0;
+            $model -> send_time = 0;
+            $model -> status = 0;
+            if($model ->validate()){
+                $transaction = Yii::app()->db->beginTransaction();
+                try{
+                    if($model -> insert()){
+                        if(LYCommon::sendphone($model->get_user_contact, $model->sms_con)){
+                            $model -> send_time = time();
+                            $model -> status = 1;
+                            $model -> update();
+                            $transaction ->commit();
+                            Yii::app()->user->setFlash('success','发送成功！');
+                            $this ->redirect(Yii::app()->controller->createUrl('sms/list'));
+                        }else{
+                            $transaction ->rollback();
+                        }
+                    }
+                }  catch (Exception $e){
+                    $transaction ->rollback();
+                }
+            }
+        }
+        
+        $smstmp_arr = array('0'=>'---请选择---');
+        foreach($smstmp_lsit as $k => $v){
+            $smstmp_arr[$v->tmp_alias] = $v -> tmp_name;
+        }
+        $this -> render('send_sms',array(
+            'model'=>$model,
+            'smstmp_arr'=>$smstmp_arr,
+        ));
+    }
+    
+    
+    public function actionSend_code(){
+        $model = new Code;
+        $codecat_model = Codecat::model();
+        if(isset($_POST['Code'])){
+            $model -> attributes = $_POST['Code'];
+            
+            $codecat_info = $codecat_model ->findByPk($model -> codecat_id);
+            if(!empty($codecat_info)){
+                $result = LYCommon::sendcode(0, $model->target,$codecat_info -> codecat_alias);
+                if($result === true){
+                    Yii::app()->user->setFlash('success','验证码发送成功');
+                    $this ->redirect(Yii::app()->controller->createUrl('sms/list_code'));
+                }else{
+                    Yii::app()->user->setFlash('error',$result['msg']);
+                }
+            }else{
+                
+            }
+        }
+        $codecat_list = $codecat_model ->findAll();
+        $codecat_arr = array('0'=>'---请选择---');
+        foreach($codecat_list as $k => $v){
+            $codecat_arr[$v->codecat_id] = $v->codecat_name;
+        }
+        
+        $this -> render('send_code',array(
+            'model'=>$model,
+            'codecat_arr'=>$codecat_arr,
+            
+        ));
+    }
+    
+    
+    public function actionAjax_get_tmp($tmp_alias=null){
+        if(empty($tmp_alias)){
+            echo '';
+            die;
+        }
+        $result = LYCommon::get_sms_tmp($tmp_alias);
+        echo $result['tmp_con'];
+    }
+}

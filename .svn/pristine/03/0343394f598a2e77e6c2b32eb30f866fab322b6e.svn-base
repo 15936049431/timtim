@@ -1,0 +1,53 @@
+<?php
+class MyselfController extends BController{
+    /*
+     * 编辑自己的资料
+     */
+    public function actionEdit(){
+        $model = self::loadmodel();
+        
+        if(isset($_POST['Myself'])){
+            $model -> attributes = $_POST['Myself'];
+            $model->google_secret = LYCommon::zjy_encode($model->google_secret,$model->manager_name);
+            if(!empty($model->google_status) && empty($model->google_secret)){
+                $model->google_secret=  LYCommon::zjy_encode(LYCommon::setGoogleCode(),$model->manager_name);
+            }
+            if($model->validate()){
+                if($model->update()){
+                    Yii::app()->user->setFlash('success','资料更改成功！');
+                }
+            }
+        }
+        
+        $model->google_secret = LYCommon::zjy_decode($model->google_secret,$model->manager_name);
+        $google_img = 'http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image';
+        if(!empty($model->google_secret)){
+            $google_img = GoogleAuthenticator::getQRCodeGoogleUrl($model->manager_name,$model->google_secret);
+        }
+        $this->render('edit',array(
+            'model'=>$model,
+            'google_img'=>$google_img,
+        ));
+    }
+    
+    public function actionUpdatepwd(){
+        $model = self::loadmodel();
+        $model -> scenario = 'updatepwd';
+        if(isset($_POST['Myself'])){
+            $model -> attributes = $_POST['Myself'];
+            if($model->validate()){
+                if($model->update()){
+                    Yii::app()->user->setFlash('success','密码修改成功！');
+                }
+            }
+        }
+        $this->render('updatepwd',array(
+            'model'=>$model,
+        ));
+    }
+    
+    
+    private function loadmodel(){
+        return Myself::model()->findByPk(Yii::app()->user->id);
+    }
+}

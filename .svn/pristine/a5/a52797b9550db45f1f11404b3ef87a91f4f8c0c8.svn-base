@@ -1,0 +1,26 @@
+@charset "utf-8";
+/* CSS Document */
+.abo_menu { background: #fff; }
+.abo_menu li { border-bottom: 1px solid #cfcfcf; }
+.abo_menu a { display: block; width: 146px; height: 42px; text-align: center; line-height: 42px; font-size: 18px; border-left: 4px solid #fff; border-right: 4px solid #fff; }
+.abo_menu li.sel a,.abo_menu a:hover { color: #ff8a10; border-left-color: #ff8a10; }
+.abo_con { width: 876px; min-height:500px; padding: 25px; background: #fff; }
+.abo_con img { max-width: 100%; }
+.abo_list li { height: 50px; line-height: 50px; }
+.abo_list li a { float: left; max-width: 700px; font-size: 16px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.abo_list li span { float: right; font-size: 16px; }
+
+.safety_body { overflow: hidden; }
+.safety_box1 { background: #26c2ce; }
+.safety_cell { display: table-cell; vertical-align: middle; text-align: center; }
+.safety_box1 img { width: auto; max-height: 80%; }
+.safety_box2 { background: #fffaee; }
+.safety_box2 img { width: auto; max-height: 80%; }
+.safety_box3 { background: #0ec1a1; }
+.safety_box3 img { width: auto; max-height: 80%; }
+.safety_box4 { background: #fff; }
+.safety_box4 img { width: auto; max-height: 80%; }
+.safety_box5 { background: #89c0c7; }
+.safety_box5 img { width: auto; max-height: 80%; }
+.safety_box6 { background: #fff; }
+.safety_box6 img { width: auto; max-height: 80%; }

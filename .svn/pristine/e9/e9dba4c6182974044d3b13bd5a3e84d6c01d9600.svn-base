@@ -1,0 +1,10 @@
+<?php 
+	$this->page_title="邀请好友";
+?>
+<div class="container-fluid pd-20" style="margin:auto;text-align:center;">
+	<img src="<?php echo $url; ?>" style="width:140px;height:140px;" />
+	<p><?php echo $invite_url; ?></p>
+</div>
+<?php if (!empty($message)) { ?>
+    <script>msg('<?php echo $message[0]; ?>','<?php echo $message[1]; ?>');</script>
+<?php } ?>

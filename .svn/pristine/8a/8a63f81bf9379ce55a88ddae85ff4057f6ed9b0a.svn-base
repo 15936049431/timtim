@@ -1,0 +1,176 @@
+<?php
+    $this->page_title = '项目中心';
+    $this->page_desc = '项目中心简介';
+	$this -> js = array('js/laydate/laydate');
+?>
+<style type="text/css">
+    .clearfix input{ margin: 0;};
+</style>
+<div class="clearfix">
+    <div class="pull-left" style="padding-left: 1em;">
+        <?php $form = $this->beginWidget('CActiveForm',array(
+            'method'=>'GET',
+            'htmlOptions'=>array(
+                'name'=>'form_search',
+            	'action'=>Yii::app()->controller->createUrl("project/orderlist"),
+            ),
+        )); ?>
+        <table class="search_table">
+            <tr>
+				<td>用户名：</td>
+                <td><input type="text" value="<?php echo isset($_GET['user_name'])?Yii::app()->request->getParam('user_name'):'' ?>" placeholder="请输入用户名" name="user_name"></td>
+                <td>投资起始时间：</td>
+                <td><input type="text" onfocus="laydate();" value="<?php echo isset($_GET['start_time'])?Yii::app()->request->getParam('start_time'):'' ?>" placeholder="请输入开始时间" name="start_time"></td>
+                <td>投资结束时间：</td>
+                <td><input type="text" onfocus="laydate();" value="<?php echo isset($_GET['end_time'])?Yii::app()->request->getParam('end_time'):'' ?>" placeholder="请输入结束时间" name="end_time"></td>
+            </tr>
+			<tr>
+				<td>借款标题：</td>
+                <td><?php echo $form->textField($project_model,'p_name',array('placeholder'=>'请输入借款标题')); ?></td>
+				<td>时间类型：</td>
+                <td><?php echo $form->dropDownList($project_model,'p_time_limittype',array('-1'=>'全部','0'=>'月',"1"=>"天")); ?></td>
+				<td>借款时长：</td>
+                <td><?php echo $form->dropDownList($project_model,'p_time_limit',array_merge(array('0'=>'全部'),$project_month_type_arr)); ?></td>
+				<td><a href="javascript:;" onclick="document.form_search.submit();" class="btn btn-success show-tooltip" title="" data-original-title="搜索"><i class="icon-ok"></i></a></td>
+			</tr>
+        </table>
+        <?php $this->endWidget(); ?>
+    </div>
+</div>
+<div class="box-content">
+    <div class="btn-toolbar pull-right">
+        <div class="btn-group">
+            <!--<a class="btn btn-circle show-tooltip" title="" href="<?php echo Yii::app()->controller->createUrl('create'); ?>" data-original-title="添加文章"><i class="icon-plus"></i></a>
+            <a class="btn btn-circle show-tooltip" title="" href="#" data-original-title="Edit selected"><i class="icon-edit"></i></a>
+            <a class="btn btn-circle show-tooltip" title="" href="javascript:;" onclick="delmore()" data-original-title="删除选中文章"><i class="icon-trash"></i></a>-->
+        </div>
+        <div class="btn-group">
+<!--            <a class="btn btn-circle show-tooltip" title="" href="#" data-original-title="Export to PDF"><i class="icon-file-text-alt"></i></a>
+            <a class="btn btn-circle show-tooltip" title="" href="#" data-original-title="Export to Exel"><i class="icon-table"></i></a>-->
+        </div>
+        <div class="btn-group">
+        	<a class="btn btn-circle show-tooltip" title="" target="_blank" href="<?php echo Yii::app()->controller->createUrl('project/orderlist',array('outfile_excel'=>'1',
+				'Project[p_name]'=>isset($_GET['Project'])?$_GET['Project']['p_name']:"",
+				'user_name'=>isset($_GET['user_name'])?$_GET['user_name']:"",
+				'start_time'=>isset($_GET['start_time'])?$_GET['start_time']:"",
+				'end_time'=>isset($_GET['end_time'])?$_GET['end_time']:"",
+				'Project[p_time_limittype]'=>isset($_GET['Project'])?$_GET['Project']['p_time_limittype']:"",
+				'Project[p_time_limit]'=>isset($_GET['Project'])?$_GET['Project']['p_time_limit']:"",
+			)); ?>" data-original-title="导出Exel"><i class="icon-table"></i>
+            <a class="btn btn-circle show-tooltip" title="" href="#" data-original-title="刷新"><i class="icon-repeat"></i></a>
+        </div>
+    </div>
+<table class="table table-advance">
+    <thead>
+        <tr>
+			<th>项目编号</th>
+        	<th>用户名</th>
+			<th>真实姓名</th>
+            <th><?php echo $order_model->getAttributeLabel('p_project_id'); ?></th>
+			<th><?php echo $order_model->getAttributeLabel('p_realmoney'); ?></th>
+			<th>投标奖励</th>
+			<th><?php echo $order_model->getAttributeLabel('p_repayaccount'); ?></th>
+			<th><?php echo $order_model->getAttributeLabel('p_repayyesaccount'); ?></th>
+			<th><?php echo $order_model->getAttributeLabel('p_interest'); ?></th>
+			<th><?php echo $order_model->getAttributeLabel('p_addtime'); ?></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach($list as $k => $v){ ?>
+        <tr>
+			<td><?php echo $v->p_project_id; ?></td>
+        	<td><?php echo $v->user->user_name; ?></td>
+            <td><?php echo $v->user->real_name; ?></td>
+            <td><a href="<?php echo Yii::app()->controller->createUrl('update',array('id'=>$v->p_project_id)); ?>" style="color:#888"><?php echo $v->project->p_name; ?></a></td>
+            <td>￥<?php echo $v->p_realmoney; ?></td>
+            <td>
+            	<?php if($v->project->p_award_type==1){ ?>
+                   <?php echo LYCommon::sprintf_diy($v->project->p_award/100*$v->p_realmoney);?>
+                <?php }elseif($v->project->p_award_type==2){ ?>
+                   <?php echo LYCommon::sprintf_diy($v->p_realmoney/$v->project->p_account*$v->project->p_award);?>
+                <?php }else{ ?>
+                   	 无
+                <?php }?>
+            </td>
+            <td>￥<?php echo $v->p_repayaccount; ?></td>
+            <td>￥<?php echo $v->p_repayyesaccount; ?></td>
+            <td>￥<?php echo $v->p_interest; ?></td>
+			<td><?php echo LYCommon::subtime($v->p_addtime,1); ?></td>
+        </tr>
+        <?php } ?>
+    </tbody>
+</table>
+
+    
+<div class="pagination text-center">
+    <ul>
+<!--        <li><a href="#">← 上一页</a></li>
+        <li><a href="#">1</a></li>
+        <li><a href="#">2</a></li>
+        <li class="active"><a href="#">3</a></li>
+        <li><a href="#">4</a></li>
+        <li><a href="#">5</a></li>
+        <li><a href="#">6</a></li>
+        <li><a href="#">下一页 → </a></li>-->
+        <?php echo $page_list; ?>
+    </ul>
+</div>
+</div>
+<script id="day_tmp">
+<?php foreach($project_day_type_arr as $k=>$v){ ?>
+	<option value="<?php echo $k; ?>"><?php echo $v; ?></option>
+<?php } ?>
+</script>
+<script id="month_tmp">
+<?php foreach($project_month_type_arr as $k=>$v){ ?>
+	<option value="<?php echo $k; ?>"><?php echo $v; ?></option>
+<?php } ?>
+</script>
+<script type="text/javascript">
+	$("#Project_p_time_limittype").change(function(){
+		if($(this).val()==1){
+			$("#Project_p_time_limit").html($("#day_tmp").html());
+		}else{
+			$("#Project_p_time_limit").html($("#month_tmp").html());
+		}
+	});
+    function deldata(id){
+        if(!(confirm('确定要删除吗？'))){
+            return false;
+        }
+        $.post("<?php echo Yii::app()->controller->createUrl('ajaxdelete'); ?>?id="+id,{
+            
+        },function(result){
+            if(result){
+                location.reload();
+            }
+        });
+    }
+    function delmore(){
+        var delarr = new Array();
+        $(".checkdel").each(function(){
+            if($(this).is(':checked')){
+                delarr.push($(this).val())
+            }
+        });
+        if(delarr == null || delarr == ''){
+            alert('请选择要删除的文章');
+            return false;
+        }
+        if(!(confirm("你确定要删除吗？"))){
+            return false;
+        }
+        $.post("<?php echo Yii::app()->controller->createUrl('ajaxdelmore') ?>",{
+            'delarr':delarr,
+        },function(result){
+            var obj = eval("("+result+")");
+            if(obj.status == 1){
+                location.reload();
+            }else{
+                alert(obj.message);
+            }
+            
+            
+        });
+    }
+</script>

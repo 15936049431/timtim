@@ -1,0 +1,23 @@
+<html>
+    <head>
+    	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    </head>
+    <body>
+        <form name="form1" <?php if(isset($open) && $open==1) {echo " target=\"_parent\" " ;}  ?> method="POST" action="<?php echo $data->acc_url; ?>">
+            <?php foreach($data->params as $k => $v){ ?>
+            <input type="hidden" name="<?php echo $k; ?>" value="<?php
+            if(!empty($data->urlencode) && in_array($k, $data->urlencode)){
+                echo urlencode($v); 
+            }elseif (!empty ($data->encrypt_encode) && in_array($k, $data->encrypt_encode)) {
+                echo $data->encrypt($v);
+            }else{
+                echo $v;
+            }
+            ?>" />
+            <?php } ?>
+        </form>
+    </body>
+    <script type="text/javascript">
+        document.form1.submit();
+    </script>
+</html>

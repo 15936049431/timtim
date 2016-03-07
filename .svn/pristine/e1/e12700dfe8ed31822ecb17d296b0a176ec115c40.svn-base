@@ -1,0 +1,195 @@
+<?php
+    $this -> page_title = '项目列表';
+?>
+<div class="wrapper">
+    	<ul class="router mt30">
+    		<li ><span>当前位置：</span></li>
+    		<li><a href="index.html">首页</a><span class="divider">></span></li>
+    		<li><span class="current">我要投资</span></li>
+    	</ul>
+    	<div class="invest-mue mt15">
+        	<div class="invest-mue-nav lbg1">
+                    <a  href="<?php echo Yii::app()->controller->createUrl('project/invest') ?>">投资项目</a>
+                    <a class="current" href="<?php echo Yii::app()->controller->createUrl('project/debenture') ?>">转让项目</a>
+                    <a href="<?php echo Yii::app()->controller->createUrl('project/calculator') ?>">收益计算器</a>
+        	</div>
+        	<div class="invest-mue-con">
+        		<?php $form = $this->beginWidget('CActiveForm',array(
+        			'method'=>'GET',
+					'htmlOptions'=>array(
+						'name'=>'form_search'
+					),
+				)); ?>
+                    <?php
+                        $filter_con_arr = array(
+                            array(
+                                'title'=>'项目状态',
+                                'list'=>array(
+                                    array(
+                                        'title'=>'全部',
+                                        'url'=>Yii::app()->controller->createUrl('invest',array('status'=>0,'timelimit'=>Yii::app()->request->getParam('timelimit'),'rate'=>Yii::app()->request->getParam('rate'))),
+                                        'is_default'=>empty($_GET['status'])?true:false,
+                                    ),
+                                    array(
+                                        'title'=>'投标中',
+                                        'url'=>Yii::app()->controller->createUrl('invest',array('status'=>1,'timelimit'=>Yii::app()->request->getParam('timelimit'),'rate'=>Yii::app()->request->getParam('rate'))),
+                                        'is_default'=>(isset($_GET['status'])&&$_GET['status']==1)?true:false,
+                                    ),
+                                    array(
+                                        'title'=>'投标结束',
+                                        'url'=>Yii::app()->controller->createUrl('invest',array('status'=>2,'timelimit'=>Yii::app()->request->getParam('timelimit'),'rate'=>Yii::app()->request->getParam('rate'))),
+                                        'is_default'=>(isset($_GET['status'])&&$_GET['status']==2)?true:false,
+                                    ),
+                                    array(
+                                        'title'=>'还款中',
+                                        'url'=>Yii::app()->controller->createUrl('invest',array('status'=>3,'timelimit'=>Yii::app()->request->getParam('timelimit'),'rate'=>Yii::app()->request->getParam('rate'))),
+                                        'is_default'=>(isset($_GET['status'])&&$_GET['status']==3)?true:false,
+                                    ),
+                                    array(
+                                        'title'=>'还款完成',
+                                        'url'=>Yii::app()->controller->createUrl('invest',array('status'=>4,'timelimit'=>Yii::app()->request->getParam('timelimit'),'rate'=>Yii::app()->request->getParam('rate'))),
+                                        'is_default'=>(isset($_GET['status'])&&$_GET['status']==4)?true:false,
+                                    )
+                                )
+                            ),
+                            array(
+                                'title'=>'项目期限',
+                                'list'=>array(
+                                    array(
+                                        'title'=>'全部',
+                                        'url'=>Yii::app()->controller->createUrl('invest',array('status'=>Yii::app()->request->getParam('status'),'timelimit'=>0,'rate'=>Yii::app()->request->getParam('rate'))),
+                                        'is_default'=>empty($_GET['timelimit'])?true:false,
+                                    ),
+                                    array(
+                                        'title'=>'1-3个月',
+                                        'url'=>Yii::app()->controller->createUrl('invest',array('status'=>Yii::app()->request->getParam('status'),'timelimit'=>1,'rate'=>Yii::app()->request->getParam('rate'))),
+                                        'is_default'=>(isset($_GET['timelimit'])&&$_GET['timelimit']==1)?true:false,
+                                    ),
+                                    array(
+                                        'title'=>'4-6个月',
+                                        'url'=>Yii::app()->controller->createUrl('invest',array('status'=>Yii::app()->request->getParam('status'),'timelimit'=>2,'rate'=>Yii::app()->request->getParam('rate'))),
+                                        'is_default'=>(isset($_GET['timelimit'])&&$_GET['timelimit']==2)?true:false,
+                                    ),
+                                    array(
+                                        'title'=>'7-9个月',
+                                        'url'=>Yii::app()->controller->createUrl('invest',array('status'=>Yii::app()->request->getParam('status'),'timelimit'=>3,'rate'=>Yii::app()->request->getParam('rate'))),
+                                        'is_default'=>(isset($_GET['timelimit'])&&$_GET['timelimit']==3)?true:false,
+                                    ),
+                                    array(
+                                        'title'=>'10-12个月',
+                                        'url'=>Yii::app()->controller->createUrl('invest',array('status'=>Yii::app()->request->getParam('status'),'timelimit'=>4,'rate'=>Yii::app()->request->getParam('rate'))),
+                                        'is_default'=>(isset($_GET['timelimit'])&&$_GET['timelimit']==4)?true:false,
+                                    ),
+                                    array(
+                                        'title'=>'13-15个月',
+                                        'url'=>Yii::app()->controller->createUrl('invest',array('status'=>Yii::app()->request->getParam('status'),'timelimit'=>5,'rate'=>Yii::app()->request->getParam('rate'))),
+                                        'is_default'=>(isset($_GET['timelimit'])&&$_GET['timelimit']==5)?true:false,
+                                    ),
+                                    array(
+                                        'title'=>'15个月以上',
+                                        'url'=>Yii::app()->controller->createUrl('invest',array('status'=>Yii::app()->request->getParam('status'),'timelimit'=>6,'rate'=>Yii::app()->request->getParam('rate'))),
+                                        'is_default'=>(isset($_GET['timelimit'])&&$_GET['timelimit']==6)?true:false,
+                                    )
+                                )
+                            ),
+                            array(
+                                'title'=>'年化利率',
+                                'list'=>array(
+                                    array(
+                                        'title'=>'全部',
+                                        'url'=>Yii::app()->controller->createUrl('invest',array('status'=>Yii::app()->request->getParam('status'),'timelimit'=>Yii::app()->request->getParam('timelimit'),'rate'=>0)),
+                                        'is_default'=>empty($_GET['rate'])?true:false,
+                                    ),
+                                    array(
+                                        'title'=>'10%以下',
+                                        'url'=>Yii::app()->controller->createUrl('invest',array('status'=>Yii::app()->request->getParam('status'),'timelimit'=>Yii::app()->request->getParam('timelimit'),'rate'=>1)),
+                                        'is_default'=>(isset($_GET['rate'])&&$_GET['rate']==1)?true:false,
+                                    ),
+                                    array(
+                                        'title'=>'10%-15%',
+                                        'url'=>Yii::app()->controller->createUrl('invest',array('status'=>Yii::app()->request->getParam('status'),'timelimit'=>Yii::app()->request->getParam('timelimit'),'rate'=>2)),
+                                        'is_default'=>(isset($_GET['rate'])&&$_GET['rate']==2)?true:false,
+                                    ),
+                                    array(
+                                        'title'=>'15%-18%',
+                                        'url'=>Yii::app()->controller->createUrl('invest',array('status'=>Yii::app()->request->getParam('status'),'timelimit'=>Yii::app()->request->getParam('timelimit'),'rate'=>3)),
+                                        'is_default'=>(isset($_GET['rate'])&&$_GET['rate']==3)?true:false,
+                                    ),
+                                    array(
+                                        'title'=>'18%-20%',
+                                        'url'=>Yii::app()->controller->createUrl('invest',array('status'=>Yii::app()->request->getParam('status'),'timelimit'=>Yii::app()->request->getParam('timelimit'),'rate'=>4)),
+                                        'is_default'=>(isset($_GET['rate'])&&$_GET['rate']==4)?true:false,
+                                    ),
+                                    array(
+                                        'title'=>'20%以上',
+                                        'url'=>Yii::app()->controller->createUrl('invest',array('status'=>Yii::app()->request->getParam('status'),'timelimit'=>Yii::app()->request->getParam('timelimit'),'rate'=>5)),
+                                        'is_default'=>(isset($_GET['rate'])&&$_GET['rate']==5)?true:false,
+                                    )
+                                )
+                            )
+                        );
+                    ?>
+                    <?php foreach($filter_con_arr as $k => $v){ ?>
+                    
+                    <div class="invest-mue-filter">
+                        <span class="condition fl"><?php echo $v['title'] ?>：</span>
+                        <div class="options fl">
+                            <?php foreach($v['list'] as $a => $b){ ?>
+                            <a class="<?php echo !empty($b['is_default'])?'selected btn-bbc1':'' ?>" href="<?php echo $b['url']; ?>"><?php echo $b['title'] ?></a>
+                            <?php } ?>
+                        </div>
+                    </div>
+                    <?php } ?>
+        		<?php $this->endWidget(); ?>
+        	</div>
+        </div>
+
+        <div class="invest-list-box">
+        	<div class="invest-list-head">
+        		<span class="col-1">名称</span>
+        		<span class="col-2">年化收益</span>
+        		<span class="col-3">金额</span>
+        		<span class="col-5">期限</span>
+        		<span class="col-3">待收金额</span>
+        		<span class="col-6">操作</span>
+        	</div>
+        	<ul class="invest-list">
+                    <?php foreach($debenture_list as $k => $v){ ?>
+                        <li>
+        			<span class="col-1">
+        				<span class="kind icon-invest icon-invest-x" style="color:red;text-indent:5px;line-height:25px;font-weight:bold;overflow:hidden;"><?php echo LYCommon::findcat('project_type',$v->project->p_type); ?></span>
+        				<a href="<?php echo Yii::app()->controller->createUrl('project/debpage',array('oid'=>$v->p_id)); ?>" ><?php echo $v->project->p_name; ?></a>
+        			</span>
+        			<span class="col-2 fsd fc1"> <?php echo $v->project->p_apr; ?>%</span>
+        			<span class="col-3 fsc"><?php echo $v->project->p_account; ?>元</span>
+                                <span class="fsa db mt5"><?php echo $v->project->valid_have; ?></span>
+        			<span class="col-5 fsd"><?php echo $v->project->p_time_limit.(($v->project->p_time_limittype==1)?"天":"个月"); ?></span>
+        			<span class="col-3"><?php echo $v->p_waitrepay; ?>元</span>
+                                <span class="col-3"><a href="<?php echo Yii::app()->controller->createUrl('project/debpage',array('oid'=>$v->p_id)); ?>" class="status status-a" style="margin-top:-5px;">购买</a></span>
+        		</li>
+                    <?php } ?>
+        	</ul>
+        	<div class="pager tac mt20">
+        		<?php echo $page_list; ?>
+        	</div>
+        </div>
+    </div>
+    <script>
+		$(function () {
+			$(document).on('mouseenter mouseleave','.invest-mue-filter a',function (e) {
+				if ($(this).hasClass('selected')) {
+					return false;
+				}
+				if (e.type=='mouseenter') {
+					$(this).addClass('btn-bbc1');
+				}
+				else if (e.type=='mouseleave') {
+					$(this).removeClass('btn-bbc1');
+				}
+			})
+			//
+			percentbar($('.percentbar'));
+			
+		});
+	</script>
+    

@@ -1,0 +1,129 @@
+<?php
+    $this -> js = array('laydate/laydate');
+    $this -> page_title = '还款中';
+?>
+				<div class="user_money_main">
+                        <dl class="user_money_tab clear">
+                            <dd><a href="<?php echo Yii::app()->controller->createUrl("userproject/project"); ?>">我的借款</a></dd>
+                            <dd><a href="<?php echo Yii::app()->controller->createUrl("userproject/repay_project"); ?>">还款中</a></dd>
+                            <dd class="sel"><a href="<?php echo Yii::app()->controller->createUrl("userproject/repay_view"); ?>">还款明细</a></dd>
+                            <dd><a href="<?php echo Yii::app()->controller->createUrl("userproject/repay_end"); ?>">已还完</a></dd>
+                        </dl>
+                        <?php if(isset($_GET['id'])){ ?>
+                        	<table>
+                                <tr>
+                                    <td>借款标题：</td>
+                                    <td><?php echo $project_info->p_name; ?></td>
+                                </tr>
+                                <tr>
+                                    <td>借款金额：</td>
+                                    <td><i><?php echo $project_info->p_account; ?></i>元</td>
+                                </tr>
+                                <tr>
+                                    <td>借款利率：</td>
+                                    <td><?php echo $project_info->p_apr; ?>%</td>
+                                </tr>
+                                <tr>
+                                    <td>借款期限：</td>
+                                    <td><?php echo $project_info->p_time_limit.(($project_info->p_time_limittype==1)?"天":"个月"); ?></td>
+                                </tr>
+                                <tr>
+                                    <td>还款方式：</td>
+                                    <td><?php echo LYCommon::GetItem_of_value($project_info->p_style,'project_repay_type'); ?></td>
+                                </tr>
+                                <tr>
+                                    <td>发布日期：</td>
+                                    <td><?php echo LYCommon::subtime($project_info->p_verifytime,3); ?></td>
+                                </tr>
+                                <tr>
+                                    <td>满标日期：</td>
+                                    <td><?php echo LYCommon::subtime($project_info->p_fullverifytime,3); ?></td>
+                                </tr>
+                            </table>
+                        <?php }else{ ?>
+						<?php $form = $this->beginWidget('CActiveForm',array(
+							'method'=>'GET',
+							'action'=>Yii::app()->controller->createUrl('userproject/repay_view'),
+							'htmlOptions'=>array(
+								'name'=>'form_search',
+								'class'=>'user_search',
+							),
+						)); ?>
+<!--                        <span>查询类型：</span>
+                            <select name="" id=""></select>-->
+                            <span>时间：</span>
+                            <input type="text" id="start_time" name="start_time" value="<?php echo isset($_REQUEST['start_time'])?$_REQUEST['start_time']:""; ?>" onfocus="laydate();" />
+                            <i>至</i>
+                            <input type="text" onfocus="laydate();" id="end_time"  name="end_time" value="<?php echo isset($_REQUEST['end_time'])?$_REQUEST['end_time']:""; ?>"/>
+                            <input type="submit" class="btn" value="查询" />
+                        <?php $this->endWidget(); ?>
+                         <?php } ?>
+                        <table class="user_recharge_record ba">
+                            <tr>
+                                <th>借款标</th>
+								<th>期数</th>
+								<th>应还款日期</th>
+								<th>本期应还本息</th>
+								<th>利息</th>
+								<th>逾期天数</th>
+								<th>逾期利息</th>
+								<th>状态</th>
+								<th>操作</th>
+                            </tr>
+                            <?php foreach($list as $k=>$v){ ?>
+							<tr>
+								<td><a target="_blank" href="<?php echo Yii::app()->controller->createUrl('project/tender',array('id'=>$v->p_project_id)); ?>"><?php echo LYCommon::truncate_longstr($v->project->p_name,8); ?></a></td>
+								<td><?php echo $v->p_order+1; ?></td>
+								<td><?php echo LYCommon::subtime($v->p_repaytime,3); ?></td>
+								<td>￥<?php echo $v->p_repayaccount; ?></td>
+								<td>￥<?php echo $v->p_interest; ?></td>
+								<td><?php echo $v->p_lateday; ?>天</td>
+								<td>￥<?php echo $v->p_lateinterest; ?></td>
+								<td><?php if($v->p_status==1){echo "已还款";}elseif($v->p_status==2){echo "网站代还款";}else{echo "未还款";} ?></td>
+                                <td><?php if($v->p_status==0){ ?><a href="javascript:;" attr="<?php echo $v->p_id; ?>" class="repay">还款</a><?php }else{ ?>-<?php } ?></td>
+							</tr>
+							<?php } ?>
+                            <tr>
+                                <td colspan="9">
+                                    <ul class="pager">
+                                        <?php echo $page_list; ?>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+<script>
+	$(".repay").click(function(){
+		var _id = $(this).attr("attr");
+                <?php if(strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 7.0") || strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 6.0")) { ?>
+                        $.layer({
+                            shade: [0],
+                            area: ['auto','auto'],
+                            dialog: {
+                                msg: '确定要还款么？',
+                                btns: 2,                    
+                                type: 4,
+                                btn: ['还款','取消'],
+                                yes: function(){
+                                    var _url = "<?php echo Yii::app()->controller->createUrl("userproject/repayment"); ?>?id="+_id ;
+                                    window.location.href=_url;
+                                }, no: function(){
+                                    
+                                }
+                            }
+                        });
+
+
+                <?php }else{ ?>
+		layer.confirm('确定要还款么?',{btn:['还款','取消'],shade:false},
+			function(){
+				var _url = "<?php echo Yii::app()->controller->createUrl("userproject/repayment"); ?>?id="+_id ;
+				window.location.href=_url;
+			},
+			function(){
+				
+			}
+		);
+                <?php } ?>
+	});
+</script>

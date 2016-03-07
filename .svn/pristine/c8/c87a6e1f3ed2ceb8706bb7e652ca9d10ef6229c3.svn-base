@@ -1,0 +1,170 @@
+﻿//全局
+$(function () {
+	try {
+        $(window).scroll(function () {
+            var wb = $(this).scrollTop() + $(this).height() - 10,
+            wt = $(this).scrollTop();
+            $(".progress:not([done='done'])").each(function () {
+                var _this = $(this);
+                if (wt < _this.offset().top && wb > _this.offset().top) {
+                    _p = $("span", _this).text();
+                    _this.attr("done", "done").find(".progress_bar").animate({ width: _p });
+                }
+            });
+            $(".progress_c:not([done='done'])").each(function () {
+                var _this = $(this);
+                if (wt < _this.offset().top && wb > _this.offset().top) {
+                    _p = parseInt($("span", _this).text().replace("%", ""))
+                    _this.attr("done", "done").svgCircle({
+                        parent: _this[0],
+                        w: 60,
+                        R: 28,
+                        sW: 4,
+                        color: ["#ffaa00", "#ff8a10", "#ffaa00"],
+                        perent: [100, _p],
+                        speed: 150,
+                        delay: 400
+                    });
+                }
+            });
+        }).trigger("scroll");
+    } catch (e) { }
+    
+    $(".progress_c_big:not([done='done'])").each(function () {
+        var _this = $(this);
+        _p = parseInt($("span", _this).text().replace("%", ""))
+        _this.attr("done", "done").svgCircle({
+            parent: _this[0],
+            w: 96,
+            R: 46,
+            sW: 4,
+            color: ["#ffaa00", "#ff8a10", "#ffaa00"],
+            perent: [100, _p],
+            speed: 150,
+            delay: 400
+        });
+    });
+})
+//index
+$(function () {
+    try {
+        $(".full_screen_slider").jslide({
+            type: "focus",
+            interval: 3000,
+            selector: ".slides li",
+            tabSel: ".pagination li",
+            tabClass: "current"
+        });
+    }
+    catch (e) { }
+    $(".wb,.wx").jbigimg();
+    var tenders = $(".index_tenders li")
+    $(".index_tenders").height(Math.ceil(tenders.length / 4) * tenders.outerHeight() + (Math.ceil(tenders.length / 4) - 1) * 15);
+
+    $("i.end_time").each(function () {
+        var _this = $(this),
+        iTime = Number(_this.html()),
+        Account;
+        RemainTime();
+        function RemainTime() {
+            var iDay, iHour, iMinute, iSecond;
+            var sDay = "", sTime = "";
+            if (iTime >= 0) {
+                iDay = parseInt(iTime / 3600 / 24);
+                iHour = parseInt((iTime / 3600) % 24);
+                iMinute = parseInt((iTime / 60) % 60);
+                iSecond = parseInt(iTime % 60);
+                iHour = iHour < 10 ? "0" + iHour : iHour;
+                iMinute = iMinute < 10 ? "0" + iMinute : iMinute;
+                iSecond = iSecond < 10 ? "0" + iSecond : iSecond;
+                sTime = [iDay, "天", iHour, "小时", iMinute, "分", iSecond, "秒"].join('');
+                if (iTime == 0) {
+                    clearTimeout(Account);
+                    sTime = "时间到了";
+                } else {
+                    Account = setTimeout(RemainTime, 1000);
+                }
+                iTime = iTime - 1;
+            } else {
+                sTime = "此标已过期";
+            }
+            _this.html(sTime);
+        }
+    })
+});
+//about
+$(function () {
+    var a_menu = $(".abo_menu li");
+    var a_menu_index = $(".abo_menu .sel").index();
+    for (var i = 0; i < 5; i++) {
+        a_menu.eq(a_menu_index).addClass("m" + i);
+        a_menu_index++;
+        if (a_menu_index > 4) a_menu_index = 0;
+    }
+})
+//invest
+$(function () {
+    $(".inv_c_tab li").click(function () {
+        var index = $(this).index();
+        $(this).addClass("sel").siblings().removeClass("sel");
+        $(".inv_c_content_in").eq(index).show().siblings(".inv_c_content_in").hide();
+    })
+})
+//mall
+$(function () {
+    var mall_banner_index = 0,
+    mall_banner_ul = $(".mall_banner_main ul");
+    mall_banner_ul.width(mall_banner_ul.find("li").size() * mall_banner_ul.find("li").width());
+    function mall_banner() {
+        if (mall_banner_ul.is(":animated")) return false;
+        if (mall_banner_index >= mall_banner_ul.find("li").size())
+            mall_banner_index = 0;
+        else if (mall_banner_index < 0)
+            mall_banner_index = mall_banner_ul.find("li").size() - 1;
+        mall_banner_ul.animate({ "margin-left": -mall_banner_index * mall_banner_ul.find("li").width() });
+        $(".mall_banner_bar .mall_banner_tit").eq(mall_banner_index).show().siblings(".mall_banner_tit").hide();
+        var _attr = $(".mall_banner_bar .mall_banner_tit").eq(mall_banner_index).attr("attr");
+        $(".mall_banner_bar .more").attr("href",_attr);
+    }
+    mall_banner();
+    var mall_banner_inter = setInterval(function () {
+        mall_banner_index++;
+        mall_banner();
+    }, 3000)
+    $(".mall_banner").hover(function () {
+        clearInterval(mall_banner_inter);
+    }, function () {
+        mall_banner_inter = setInterval(function () {
+            mall_banner_index++;
+            mall_banner();
+        }, 3000)
+    })
+    $(".mall_banner_bar em.prev").click(function () {
+        mall_banner_index = mall_banner_index - 1;
+        mall_banner();
+    })
+    $(".mall_banner_bar em.next").click(function () {
+        mall_banner_index = mall_banner_index + 1;
+        mall_banner();
+    })
+
+    $(".mall_boxes dt li").click(function () {
+        var index = $(this).index();
+        $(this).addClass("sel").siblings("li").removeClass("sel");
+        $(this).parents(".mall_boxes").find("dd ul").animate({ "margin-left": -840 * index });
+    })
+    
+    $(".m_c_img_list li").hover(function () {
+        $(this).addClass("sel").siblings("li").removeClass("sel");
+        $(".m_c_img_main img").attr("src", $("img", this).attr("src"));
+    },function(){
+    	$(this).removeClass("sel");
+        $(".m_c_img_main img").attr("src", $(".m_c_img_main img").attr("attr"));
+    })
+
+    $(".mall_content_tab dd").click(function () {
+        var index = $(this).index();
+        $(this).addClass("sel").siblings("dd").removeClass("sel");
+        $(".mall_content").eq(index).show().siblings(".mall_content").hide();
+    })
+})

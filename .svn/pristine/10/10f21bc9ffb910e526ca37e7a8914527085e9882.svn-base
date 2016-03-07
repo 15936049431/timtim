@@ -1,0 +1,5 @@
+<?php
+    require_once 'EpayCommon.php';
+    class Register extends EpayCommon{
+        
+    }

@@ -1,0 +1,59 @@
+<?php
+    $this -> js = array('laydate/laydate');
+    $this -> page_title = '提现记录';
+?>
+				<div class="user_money_main">
+                        <dl class="user_money_tab clear">
+                            <dd><a href="<?php echo Yii::app()->controller->createUrl("usercenter/bill"); ?>">资金明细</a></dd>
+                            <dd><a href="<?php echo Yii::app()->controller->createUrl("usercenter/rechargelist"); ?>">充值记录</a></dd>
+                            <dd class="sel"><a href="<?php echo Yii::app()->controller->createUrl("usercenter/cashlist"); ?>">提现记录</a></dd>
+                            <dd><a href="<?php echo Yii::app()->controller->createUrl("usercenter/awardlist"); ?>">红包记录</a></dd>
+                        </dl>
+                        <?php $form = $this->beginWidget('CActiveForm',array(
+							'method'=>'GET',
+							'action'=>Yii::app()->controller->createUrl('usercenter/cashlist'),
+							'htmlOptions'=>array(
+								'name'=>'form_search',
+								'class'=>'user_search',
+							),
+						)); ?>
+<!--                        <span>查询类型：</span>
+                            <select name="" id=""></select>-->
+                            <span>时间：</span>
+                            <input type="text" id="start_time" name="start_time" value="<?php echo isset($_REQUEST['start_time'])?$_REQUEST['start_time']:""; ?>" onfocus="laydate();" />
+                            <i>至</i>
+                            <input type="text" onfocus="laydate();" id="end_time"  name="end_time" value="<?php echo isset($_REQUEST['end_time'])?$_REQUEST['end_time']:""; ?>"/>
+                            <input type="submit" class="btn" value="查询" />
+                        <?php $this->endWidget(); ?>
+						<p style="display:inline-block;width:750px;font-size:16px;padding-left:20px;">成功提现笔数：<?php echo $money['cash_num']; ?>笔&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                       		提现总额：<?php echo $money['cash_money']; ?>元&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;手续费：<?php echo $money['cash_fee']; ?>元</p>
+                        <table class="user_recharge_record ba">
+                            <tr>
+                                <th>提现银行</th>
+								<th>提现账号</th>
+								<th>提现总额</th>
+								<th>到账金额</th>
+								<th>手续费</th>
+								<th>状态</th>
+								<th>添加时间</th>
+                            </tr>
+                            <?php foreach($cash_list as $k=>$v){ ?>
+							 <tr>
+							    <td><?php echo LYCommon::truncate_longstr($v->item->i_name,6); ?></td>
+                                <td>尾号 <?php echo substr($v->c_cardNum,-4); ?></td>
+								<td>￥<?php echo $v->c_money; ?></td>
+								<td>￥<?php echo $v->c_realmoney; ?></td>
+								<td>￥<?php echo $v->c_fee; ?></td>
+								<td><?php if($v->c_status==0){echo "申请";}elseif($v->c_status==1){echo "成功";}else{echo "失败";}; ?></td>
+								<td><?php echo LYCommon::subtime($v->c_addtime,3); ?></td>
+							</tr>
+							<?php } ?>
+                            <tr>
+                                <td colspan="4">
+                                    <ul class="pager">
+                                        <?php echo $page_list; ?>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>

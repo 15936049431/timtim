@@ -1,0 +1,68 @@
+<?php
+$this->page_title = '体验标';
+$this->page_desc = '体验标列表';
+?>
+<style type="text/css">
+    .clearfix input{ margin: 0;};
+</style>
+<div class="box-content">
+    <div class="btn-toolbar pull-right">
+        <div class="btn-group"></div>
+        <div class="btn-group"></div>
+        <div class="btn-group">
+            <a class="btn btn-circle show-tooltip" title="" href="#" data-original-title="刷新"><i class="icon-repeat"></i></a>
+        </div>
+    </div>
+    <table class="table table-advance">
+        <thead>
+            <tr>
+                <th><?php echo $model->getAttributeLabel('p_name'); ?></th>
+                <th><?php echo $model->getAttributeLabel('p_account'); ?></th>
+                <th><?php echo $model->getAttributeLabel('p_apr'); ?></th>
+                <th><?php echo $model->getAttributeLabel('p_time_limit'); ?></th>
+                <th>最大/最小投标金额</th>
+                <th><?php echo $model->getAttributeLabel('p_status'); ?></th>
+                <th style="width:100px">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($list as $k => $v) { ?>
+                <tr>
+                    <td><?php echo $v->p_name; ?></td>
+                    <td>￥<?php echo $v->p_account; ?>/<?php echo $v->p_account_yes; ?></td>
+                    <td><?php echo $v->p_apr; ?>%</td>
+                    <td><?php echo $v->p_time_limit . (($v->p_time_limittype == 1) ? "天" : "个月"); ?></td>
+                    <td><?php echo $v->p_mostaccount == 0 ? '不限' : $v->p_mostaccount, '/' . $v->p_lowaccount ?></td>
+                    <td><?php echo LYCommon::findcat('project_status', $v->p_status); ?></td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-small btn-danger show-tooltip" title="" href="<?php echo Yii::app()->controller->createUrl('project/expview', array('id' => $v->p_id)); ?>"  data-original-title="查看标详情"><i class="icon-edit"></i></a>
+                            <a class="btn btn-small btn-danger show-tooltip" title="" href="<?php echo Yii::app()->controller->createUrl('project/expinvestlist', array('id' => $v->p_id)); ?>"  data-original-title="查看投资还款详情"><i class="icon-book"></i></a>
+                            <a class="btn btn-small btn-danger show-tooltip delexp" eid="<?php echo $v->p_id; ?>" title="" href="##"  data-original-title="删除体验标"><i class="icon-trash"></i></a>
+                        </div>
+                    </td>
+                </tr>
+            <?php } ?>
+        </tbody>
+    </table>
+
+
+    <div class="pagination text-center">
+        <ul>
+            <?php echo $page_list; ?>
+        </ul>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $(".delexp").click(function () {
+            var eid = $(this).attr("eid");
+            if (confirm("你确定要删除吗？只有未投或已还完的标才能删除")) {
+                $.get("<?php echo Yii::app()->createUrl('/work/project/expdel'); ?>" + "?id=" + eid, function (data) {
+                    alert(data);
+                }
+                );
+            }
+        });
+    });
+</script>

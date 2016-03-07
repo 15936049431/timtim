@@ -1,0 +1,35 @@
+<?php
+    class DTable extends CActiveRecord
+    {
+        private static $tableName;
+        
+        public function __construct($table_name = '')
+        {
+            $args = func_get_args();
+            if (count($args) == 1 && $args[0] == null) {
+                parent::__construct($args[0]);
+            } else {
+                self::$tableName = $table_name;
+                parent::__construct();
+            }
+        }
+        
+        public static function model($table_name = '')
+        {
+            self::$tableName = $table_name;
+            return parent::model(__CLASS__);
+        }
+        
+        public function tableName()
+        {
+            return self::$tableName;
+        }
+        
+        
+        public function unsetModels($name = __CLASS__)
+        {
+            parent::unsetModels($name);
+        }
+        
+        
+    }

@@ -1,0 +1,58 @@
+<?php 
+    $this -> page_title = $article_info->article_title;
+    $this -> css = array('guanyu');
+    $this->url =Yii::app()->controller->createUrl("article/list",array('p'=>'aboutus','cat'=>'carterlist'));
+?>
+
+<section class="box">
+    <ul class="xinwen">
+    	<?php echo $article_info -> article_cont; ?>
+    </ul>
+</section>
+<script>
+    $(document).ready(function () {
+
+        //网页加载前处理一遍
+        $("img").load(function () {
+            var screenwidth = $(window).width();
+            var imgwidth = $(this).width();
+            if (imgwidth > screenwidth && imgwidth>100) {
+                var imgw=screenwidth-20;//排除边框
+                var he=parseInt((imgw/imgwidth)*$(this).height());
+                $(this).css({"width": screenwidth,"height":he})
+            }
+        });
+
+        var imglist = document.getElementsByTagName("img");
+        function doDraw() {
+            _width = $(window).width();
+            for (var i = 0, len = imglist.length; i < len; i++) {
+                DrawImage(imglist[i], _width);
+            }
+        }
+
+        function DrawImage(ImgD, _width) {
+            var image = new Image();
+            image.src = ImgD.src;
+            image.onload = function () {
+                if (image.width > 100 && image.height > 100) {
+                    if (image.width > _width) {
+                        ImgD.width = _width;
+                        ImgD.height = parseInt((image.height * _width) / image.width);
+                    } else {
+                        ImgD.width = image.width;
+                        ImgD.height = image.height;
+                    }
+
+                }
+            }
+
+        }
+
+        window.onresize = function () {
+            //捕捉屏幕窗口变化，始终保证图片根据屏幕宽度合理显示
+            doDraw();
+        }
+
+    });
+</script>

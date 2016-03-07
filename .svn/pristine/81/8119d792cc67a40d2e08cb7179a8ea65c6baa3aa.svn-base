@@ -1,0 +1,150 @@
+<?php 
+	$this -> page_title = "投资列表" ;
+	$this -> js = array("raphael");
+	$this -> css =array("invest"); 
+?>
+	<div class="main">
+            <div class="site">
+                <a href="/">首页</a>
+                <i class="fontello">&#xe83f;</i>
+                <span>我要投资</span>
+            </div>
+            <div class="inv_require">
+                <h1>筛选投资项目</h1>
+                <?php $form = $this->beginWidget('CActiveForm',array(
+        			'method'=>'GET',
+					'htmlOptions'=>array(
+						'name'=>'form_search'
+					),
+				)); 
+                	$project_search_arr = array(
+                		array(
+                			"title"=>"利率范围",
+                			"list"=>array(
+                				array(
+                					"title"=>"不限",
+                					"url"=>Yii::app()->controller->createUrl("list",array("rate"=>0,"timelimit"=>Yii::app()->request->getParam("timelimit"))),
+                					"select"=>(empty($_GET['rate'])) ? true : false,
+                				),
+                				array(
+            						"title"=>"10%以下",
+               						"url"=>Yii::app()->controller->createUrl("list",array("rate"=>1,"timelimit"=>Yii::app()->request->getParam("timelimit"))),
+                					"select"=>(isset($_GET['rate']) && $_GET['rate']==1) ? true : false,
+			                	),
+                				array(
+                					"title"=>"10%-15%",
+                					"url"=>Yii::app()->controller->createUrl("list",array("rate"=>2,"timelimit"=>Yii::app()->request->getParam("timelimit"))),
+                					"select"=>(isset($_GET['rate']) && $_GET['rate']==2) ? true : false,
+                				),
+                				array(
+                					"title"=>"15%-18%",
+                					"url"=>Yii::app()->controller->createUrl("list",array("rate"=>3,"timelimit"=>Yii::app()->request->getParam("timelimit"))),
+                					"select"=>(isset($_GET['rate']) && $_GET['rate']==3) ? true : false,
+                				),
+                				array(
+                					"title"=>"18%-20%",
+                					"url"=>Yii::app()->controller->createUrl("list",array("rate"=>4,"timelimit"=>Yii::app()->request->getParam("timelimit"))),
+                					"select"=>(isset($_GET['rate']) && $_GET['rate']==4) ? true : false,
+                				),
+                				array(
+                					"title"=>"20%以上",
+                					"url"=>Yii::app()->controller->createUrl("list",array("rate"=>5,"timelimit"=>Yii::app()->request->getParam("timelimit"))),
+                					"select"=>(isset($_GET['rate']) && $_GET['rate']==5) ? true : false,
+                				),
+		                	),	
+	                	),
+                		array(
+                			"title"=>"项目周期",
+                			"list"=>array(
+                				array(
+                					"title"=>"不限",
+                					"url"=>Yii::app()->controller->createUrl("list",array("rate"=>Yii::app()->request->getParam("rate"),"timelimit"=>0)),
+                					"select"=>(empty($_GET['timelimit'])) ? true : false,
+                				),
+                				array(
+                					"title"=>"1-3个月",
+                					"url"=>Yii::app()->controller->createUrl("list",array("rate"=>Yii::app()->request->getParam("rate"),"timelimit"=>1)),
+                					"select"=>(isset($_GET['timelimit']) && $_GET['timelimit']==1) ? true : false,
+                				),
+                				array(
+                					"title"=>"4-6个月",
+                					"url"=>Yii::app()->controller->createUrl("list",array("rate"=>Yii::app()->request->getParam("rate"),"timelimit"=>2)),
+                					"select"=>(isset($_GET['timelimit']) && $_GET['timelimit']==2) ? true : false,
+                				),
+                				array(
+                					"title"=>"7-9个月",
+                					"url"=>Yii::app()->controller->createUrl("list",array("rate"=>Yii::app()->request->getParam("rate"),"timelimit"=>3)),
+               						"select"=>(isset($_GET['timelimit']) && $_GET['timelimit']==3) ? true : false,
+               					),
+                				array(
+                					"title"=>"10-12个月",
+                					"url"=>Yii::app()->controller->createUrl("list",array("rate"=>Yii::app()->request->getParam("rate"),"timelimit"=>4)),
+                					"select"=>(isset($_GET['timelimit']) && $_GET['timelimit']==4) ? true : false,
+                				),
+ 			               	),
+	                	),
+                	);
+                ?>
+                <?php foreach($project_search_arr as $k=>$v){ ?>
+	                <dl class="clear">
+	                    <dt><?php echo $v['title']; ?>：</dt>
+	                    <?php foreach($v['list'] as $_k=>$_v){ ?>
+		                    <dd <?php echo $_v['select'] ? " class='sel'" : "" ; ?>><a href="<?php echo $_v['url']; ?>"><?php echo $_v['title']; ?></a></dd>
+		                <?php } ?>
+	                </dl>
+                <?php } ?>
+                <?php $this->endWidget(); ?>
+            </div>
+            <div class="inv_tenders mt20 mb20 ba" >
+                <table>
+                    <tr>
+                        <th width="218">项目</th>
+                        <th width="175">预计年化率</th>
+                        <th width="170">借款金额</th>
+                        <th width="120">期限</th>
+                        <th width="120">进度</th>
+                        <th width="170">可投金额</th>
+                        <th width="125">&nbsp;</th>
+                    </tr>
+                    <?php foreach($list as $k=>$v){ ?>
+                    <tr>
+                        <td>
+                            <a href="<?php echo Yii::app()->controller->createUrl('project/tender',array('id'=>$v->p_id)); ?>" class="tit"><?php echo LYCommon::truncate_longstr($v->p_name,20); ?></a>
+                            <p>项目奖励:<?php if($v->p_award_type==1){echo $v->p_award."%";}elseif($v->p_award_type==2){echo $v->p_award."元";}else{echo "无";} ?></p>
+                        </td>
+                        <td><i><?php echo $v->p_apr; ?>%</i></td>
+                        <td>￥<?php echo $v->p_account; ?></td>
+                        <td><em><?php echo $v->p_time_limit; ?></em><?php echo $v->p_time_limittype==1 ? "天" : "个月" ; ?></td>
+                        <td>
+                            <div class="progress_c"><span><?php echo $v->p_account_yes/$v->p_account*100<100 ? LYCommon::sprintf_diy_9($v->p_account_yes/$v->p_account*100) : 100; ?>%</span></div>
+                        </td>
+                        <td>￥<?php echo LYCommon::sprintf_diy($v->p_account-$v->p_account_yes); ?></td>
+                        <td>
+                        	<?php if($v->p_status==1){ ?>
+				            	<?php if($v->p_account>$v->p_account_yes){ ?>
+				            	<a href="<?php echo Yii::app()->controller->createUrl('project/tender',array('id'=>$v->p_id)); ?>" class="btn" target="_blank">立即投标</a>
+				            	<?php }else{ ?>
+				            	<span class="btn">满标待审</span>
+				            	<?php } ?>
+				            <?php }elseif($v->p_status==2 || $v->p_status==0){ ?>
+				            	<span class="btn"><?php echo ($project_now->p_status==2)?"初审失败":"发标待初审"; ?></span>
+				            <?php }elseif($v->p_status==3){ ?>
+				            	<span class="btn">正在还款</span>
+				            <?php }elseif($v->p_status==4){ ?>
+				            	<span class="btn">满标审核失败</span>
+				            <?php }elseif($v->p_status==5){ ?>
+				            	<span class="btn">流标</span>
+				            <?php }elseif($v->p_status==6){ ?>
+				            	<span class="btn">用户已撤销</span>
+				            <?php }else{ ?>
+				            	<span class="btn">还款完成</span>
+				            <?php } ?>
+                        </td>
+                    </tr>
+                    <?php } ?>
+                </table>
+                <ul class="pager">
+                    <?php echo $page_list; ?>
+                </ul>
+            </div>
+        </div>

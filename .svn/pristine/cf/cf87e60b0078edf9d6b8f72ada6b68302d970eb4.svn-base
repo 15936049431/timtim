@@ -1,0 +1,90 @@
+﻿//Created by Action Script Viewer - http://www.buraks.com/asv
+package model {
+    import flash.utils.*;
+    import flash.external.*;
+
+    public class Param {
+
+        public static var uid:String;
+        public static var ver:String;
+        public static var uidUrl:String;
+        public static var tmpUrl:String;
+        public static var tmpImgUrl:String;
+        public static var cookie:String;
+        public static var imgUrl:String;
+        public static var delUrl:String;
+        public static var sourcePicURL:String;
+        public static var albumURL:String;
+        public static var modifyNickname:String;
+        public static var jsFunc:String;
+        public static var ticket:Array = new Array();
+        public static var ticketTime:Number;
+        public static var language:Object;
+        public static var limited:String;
+        public static var s:Object;
+        public static var verifyCode:String;
+
+        public function Param():void{
+        }
+        public static function getTicket():void{
+            clearTimeout(Param.ticketTime);
+            Param.clearTicket();
+            if (Param.ticket){
+                if (Param.ticket.length < 2){
+                    if (ExternalInterface.available){
+                        ExternalInterface.call("App.requestTicket", 4);
+                    };
+                };
+            } else {
+                if (ExternalInterface.available){
+                    ExternalInterface.call("App.requestTicket", 4);
+                };
+            };
+        }
+        public static function setTicket(_arg1:Array):void{
+            var _j:* = _arg1;
+            if (_j.length == 0){
+                Param.getTicket();
+                return;
+            };
+            var i:* = 0;
+            while (i < _j.length) {
+                Param.ticket.push(_j[i]);
+                i = (i + 1);
+            };
+            Param.ticketTime = setTimeout(function ():void{
+                Param.getTicket();
+            }, 540000);
+        }
+        public static function clearTicket():void{
+            var _local1:Array = new Array();
+            var _local2:int;
+            while (_local2 < Param.ticket.length) {
+                if ((new Date().getTime() - Param.ticket[_local2][1]) < 540000){
+                    _local1.push(Param.ticket[_local2]);
+                };
+                _local2++;
+            };
+            Param.ticket = _local1;
+        }
+        public static function initLanguage():void{
+            var _local1:Object;
+            Param.language = {};
+            if (ExternalInterface.available){
+                _local1 = ExternalInterface.call("App.requestLanguage");
+                if (_local1 != null){
+                    Param.language["CX0189"] = _local1["CX0189"];
+                    Param.language["CX0193"] = _local1["CX0193"];
+                    _local1 = null;
+                };
+            };
+        }
+        public static function getLanguage(_arg1:String):String{
+            if (Param.language == null){
+                return ("");
+            };
+            return (Param.language[_arg1]);
+        }
+
+    }
+}//package model 

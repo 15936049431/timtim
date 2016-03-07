@@ -1,0 +1,108 @@
+﻿//Created by Action Script Viewer - http://www.buraks.com/asv
+package view.avatar {
+    import model.*;
+    import flash.display.*;
+    import view.ui.*;
+    import flash.text.*;
+
+    public class AvatarArea extends Sprite {
+
+        private var _bigBox:RectBox;
+        private var _midBox:RectBox;
+        private var _smallBox:RectBox;
+        private var _bigTxt:TextField;
+        private var _midTxt:TextField;
+        private var _smalltxt:TextField;
+        private var _label:TextField;
+        private var _labelTxt:String;
+        public var bigPic:Bitmap;
+        public var midPic:Bitmap;
+        public var smallPic:Bitmap;
+
+        public function AvatarArea(){
+            this._labelTxt = ((Param.language["CX0189"]) || ("您上传的头像会自动生成三种尺寸，请注意中小尺寸的头像是否清晰"));
+            super();
+            this.init();
+        }
+        private function init():void{
+            this.initBoxs();
+            this.initTxt();
+        }
+        private function initBoxs():void{
+            this._bigBox = this.setBoxs(180, 180, 20, 60);
+            this._midBox = this.setBoxs(50, 50, 250, 60);
+            this._smallBox = this.setBoxs(30, 30, 260, 190);
+            addChild(this._bigBox);
+            addChild(this._midBox);
+            addChild(this._smallBox);
+        }
+        private function setBoxs(_arg1:Number, _arg2:Number, _arg3:Number, _arg4:Number):RectBox{
+            var _local5:RectBox = new RectBox(_arg1, _arg2);
+            _local5.x = _arg3;
+            _local5.y = _arg4;
+            return (_local5);
+        }
+        private function initTxt():void{
+            var _local1:TextFormat = new TextFormat("宋体", 12, 0xCD6500);
+            _local1.leading = 4;
+            this._label = new TextField();
+            this._label.multiline = true;
+            this._label.wordWrap = true;
+            this._label.selectable = false;
+            this._label.width = 200;
+            this._label.x = 20;
+            this._label.y = 6;
+            this._label.text = this._labelTxt;
+            this._label.setTextFormat(_local1);
+            var _local2:TextFormat = new TextFormat("宋体", 12, 0x9A9A9A);
+            _local2.align = TextFormatAlign.CENTER;
+            this._bigTxt = this.setText(181, 20, 245, "大尺寸头像，180×180像素", _local2);
+            this._midTxt = this.setText(66, 244, 115, "中尺寸头像\n50×50像素(自动生成)", _local2);
+            this._smalltxt = this.setText(66, 244, 225, "小尺寸头像\n30×30像素(自动生成)", _local2);
+            addChild(this._label);
+            addChild(this._bigTxt);
+            addChild(this._midTxt);
+            addChild(this._smalltxt);
+        }
+        private function setText(_arg1:Number, _arg2:Number, _arg3:Number, _arg4:String, _arg5:TextFormat):TextField{
+            if (_arg1 == 66){
+                _arg5.leading = 4;
+            };
+            var _local6:TextField = new TextField();
+            _local6.selectable = false;
+            _local6.mouseEnabled = false;
+            _local6.width = _arg1;
+            _local6.multiline = true;
+            _local6.wordWrap = true;
+            _local6.x = _arg2;
+            _local6.y = _arg3;
+            _local6.text = _arg4;
+            _local6.setTextFormat(_arg5);
+            return (_local6);
+        }
+        public function initAvatars(_arg1:BitmapData):void{
+            this.bigPic = new Bitmap(_arg1);
+            this.setAvatarSize(this.bigPic, 180);
+            this.midPic = new Bitmap(_arg1);
+            this.setAvatarSize(this.midPic, 50);
+            this.smallPic = new Bitmap(_arg1);
+            this.setAvatarSize(this.smallPic, 30);
+            this.bigPic.x = (this.bigPic.y = (this.midPic.x = (this.midPic.y = (this.smallPic.x = (this.smallPic.y = 1)))));
+            this._bigBox.addChild(this.bigPic);
+            this._midBox.addChild(this.midPic);
+            this._smallBox.addChild(this.smallPic);
+        }
+        public function changeAvatars(_arg1:BitmapData):void{
+            this.smallPic.bitmapData = (this.midPic.bitmapData = (this.bigPic.bitmapData = null));
+            this.smallPic.bitmapData = (this.midPic.bitmapData = (this.bigPic.bitmapData = _arg1));
+            this.setAvatarSize(this.bigPic, 180);
+            this.setAvatarSize(this.midPic, 50);
+            this.setAvatarSize(this.smallPic, 30);
+        }
+        private function setAvatarSize(_arg1:Bitmap, _arg2:Number):void{
+            _arg1.width = _arg2;
+            _arg1.scaleY = _arg1.scaleX;
+        }
+
+    }
+}//package view.avatar 

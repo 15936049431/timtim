@@ -1,0 +1,28 @@
+﻿//Created by Action Script Viewer - http://www.buraks.com/asv
+package utils {
+    import flash.net.*;
+    import flash.external.*;
+
+    public class NavigateUtils {
+
+        public static const WINDOW_SELF:String = "_self";
+        public static const WINDOW_BLANK:String = "_blank";
+        public static const WINDOW_PARENT:String = "_parent";
+        public static const WINDOW_TOP:String = "_top";
+
+        public static function openURL(_arg1:String, _arg2:String="_blank"):void{
+            var url:* = _arg1;
+            var windowName:String = _arg2;
+            try {
+                if (ExternalInterface.available){
+                    ExternalInterface.call("window.open", url, windowName);
+                } else {
+                    throw (new Error());
+                };
+            } catch(e:Error) {
+                navigateToURL(new URLRequest(url), windowName);
+            };
+        }
+
+    }
+}//package utils 
