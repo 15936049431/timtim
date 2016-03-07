@@ -7,7 +7,7 @@
                             <dd><a href="<?php echo Yii::app()->controller->createUrl("usercenter/bill"); ?>">资金明细</a></dd>
                             <dd class="sel"><a href="<?php echo Yii::app()->controller->createUrl("usercenter/rechargelist"); ?>">充值记录</a></dd>
                             <dd><a href="<?php echo Yii::app()->controller->createUrl("usercenter/cashlist"); ?>">提现记录</a></dd>
-                            <dd><a href="<?php echo Yii::app()->controller->createUrl("usercenter/ourlist"); ?>">众筹记录</a></dd>
+                            <dd><a href="<?php echo Yii::app()->controller->createUrl("usercenter/awardlist"); ?>">红包记录</a></dd>
                         </dl>
                         <?php $form = $this->beginWidget('CActiveForm',array(
 							'method'=>'GET',

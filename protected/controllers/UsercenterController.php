@@ -782,5 +782,28 @@ class UsercenterController extends Controller {
     		"use_money"=>$use_money,
     	));
     }
+    
+    public function actionawardlist(){
+    	$model = AwardBill::model();
+    	$userid = Yii::app()->user->id;
+    	$criteria = new CDbCriteria;
+    	$start_time = (isset($_GET['get_time']) && $_GET['get_time'] != "") ? strtotime($_GET['get_time']) : 0;
+    	$end_time = (isset($_GET['end_time']) && $_GET['end_time'] != "") ? strtotime($_GET['end_time'] . ' 23:59:59') : time();
+    	$criteria->addCondition("get_time>'{$start_time}' and end_time>'{$end_time}'");
+    	$criteria->compare('user_id', $userid);
+    	$criteria->compare('status',empty($_GET['status']) ? "0" : $_GET['status']);
+    	$total_count = $model->count($criteria);
+    	$page = new Pagination($total_count, 10);
+    	$page_list = $page->fpage(array(4, 5, 6, 3, 7));
+    	$page_list = $total_count <= $page->limitnum ? "" : $page_list;
+    	$criteria->limit = $page->limitnum;
+    	$criteria->offset = $page->offset;
+    	$criteria->order = 'add_time DESC';
+    	$list = $model->findAll($criteria);
+    	$this->render('awardlist', array(
+    		'list' => $list,
+    		'page_list' => $page_list,
+    	));
+    }
 
 }

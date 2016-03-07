@@ -701,6 +701,9 @@ class LYCommon {
         	'integral_type'=>array(
         		'0' =>'申请','1' =>'发货','2'=>'审核拒绝','3'=>'未到货','4'=>'已收件','5'=>'已返还金额'
         	),
+        	'award_type'=>array(
+        		'0'=>'可使用','1'=>'已使用 ','2'=>'已过期',
+        	),
         );
         if (!isset($arr[$f_type][$f_value])) {
             return $arr[$f_type];
@@ -1427,11 +1430,6 @@ class LYCommon {
                     $invest_data1['b_time'] = time();
                     $invest_data1['remark'] = '增加待收金额';
                     self::AddBill($invest_data1);
-
-                    if(Yii::app()->params['project_reaward_menu'] == 1 && $v->p_mold!="" && $v->p_money >= Yii::app()->params['project_reaward_money'] && $model->p_dxb==""){
-                    	UtilCommon::ProjectReawardMostly($model,$v);
-                    }
-                    UtilCommon::addContinue($model,$v);
                     
                     //发放借款奖励
                     if ($model->p_award_type != 0) {
@@ -1554,8 +1552,6 @@ class LYCommon {
                 $project_info->p_maxorder = $project_order_model->p_money > $project_info->p_maxorder ? $project_order_model->p_money : $project_info->p_maxorder;
                 $project_info -> p_fulltime = time();
                 $project_info->update();
-
-                UtilCommon::checkContinue($project_order_model);
                 
                 $i = 0;
                 foreach ($collection_result['data'] as $k => $v) {

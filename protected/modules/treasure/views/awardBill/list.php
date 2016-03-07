@@ -35,14 +35,14 @@
     <tbody>
         <?php foreach($list as $k => $v){ ?>
         <tr>
-            <td><?php echo $v->award_name; ?></td>
-<td><?php echo $v->award_alias; ?></td>
-<td><?php echo $v->award_desc; ?></td>
-<td>¥<?php echo $v->award_money; ?></td>
-<td><?php echo $v->award_user; ?>人</td>
-<td>¥<?php echo $v->award_all; ?></td>
-<td><?php echo LYCommon::subtime($v->start_time,3); ?></td>
+            <td><?php echo $v->user->user_name; ?></td>
+<td><?php echo $v->award->name; ?></td>
+<td><?php echo $v->name; ?></td>
+<td>¥<?php echo $v->money; ?></td>
+<td><?php echo LYCommon::subtime($v->get_time,3); ?></td>
 <td><?php echo LYCommon::subtime($v->end_time,3); ?></td>
+<td><?php echo LYCommon::subtime($v->use_time,3); ?></td>
+<td><?php echo $v->status == 1 ? '已使用' : '未使用'; ?></td>
             <td>
                 <div class="btn-group">
                     <!--<a class="btn btn-small show-tooltip" title="" href="#" data-original-title="查看"><i class="icon-zoom-in"></i></a>-->

@@ -43,7 +43,7 @@ class AwardBill extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('id, user_id, award_id, type_id, name, get_time, end_time, use_time, award_alias, money, low_account, most_account, min_limit, max_limit, type, status, project_id, order_id, add_time, add_ip', 'required'),
+			array('id, user_id, award_id, type_id, name, get_time, end_time, award_alias, money, low_account, most_account, min_limit, max_limit, type, status,add_time, add_ip', 'required'),
 			array('money, low_account, most_account, min_limit, max_limit, type, status', 'numerical', 'integerOnly'=>true),
 			array('id, user_id, award_id, type_id, project_id, order_id', 'length', 'max'=>18),
 			array('name, award_alias', 'length', 'max'=>255),
@@ -62,6 +62,8 @@ class AwardBill extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+			'award'=>array(self::BELONGS_TO,'Award','award_id'),
+			'atype'=>array(self::BELONGS_TO,'AwardType','type_id'),
 		);
 	}
 

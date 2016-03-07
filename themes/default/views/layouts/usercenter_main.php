@@ -39,6 +39,7 @@
            					array("title"=>"资金明细","url"=>"usercenter/bill"),
             				array("title"=>"充值记录",'url'=>"usercenter/rechargelist"),
             				array("title"=>"提现记录",'url'=>"usercenter/cashlist"),
+         					array("title"=>"红包记录",'url'=>"usercenter/awardlist"),
             			),
             		),
             		array(

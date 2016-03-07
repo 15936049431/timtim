@@ -366,7 +366,7 @@ class PayController extends Controller{
     	}
     }
     
-    public static function shanxin_pay_back() {
+    public static function actionshanxin_pay_back() {
     	$return = $_REQUEST;
     	$return_code = $return['payRsltCd'];
     	$model = AssetsRecharge::model()->findByAttributes(array("r_BillNo"=>str_replace("treasure","",$return['orderId'])));

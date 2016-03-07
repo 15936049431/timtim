@@ -28,7 +28,7 @@ class SiteController extends Controller {
 
 
 	public function actiontest(){
-		//LYCommon::sendPhone("15936049431","您的验证码为197822，请于30分钟内输入，如非本人操作，请忽略本短信。");
+		
 	}
 	
     /**
@@ -138,69 +138,10 @@ class SiteController extends Controller {
                     $transaction = Yii::app()->db->beginTransaction();
                     try {
                         if ($model->insert()) {
-                            //插入资金表
-                            $assets_model = new Assets;
-                            $assets_model->user_id = $model->user_id;
-                            //插入用户统计表
-                            $every_user = new Everyuser;
-                            $every_user->user_id = $model->user_id;
-                            $every_user->addtime = time();
-                            $every_user->insert();
-                            //插入积分表
-                            $integral_model = new Integral;
-                            $integral_model->user_id = $model->user_id;
-                            $integral_model->i_addtime = time();
-                            $integral_model->i_addip = $_SERVER['REMOTE_ADDR'];
-                            $integral_model->insert();
-
-                            if (!empty($model->p_user_id)) {
-                                $invite_num = $model->findByPk($model->p_user_id)->invite_num;
-                                if ($invite_num < 100) {//如果邀请人数小于100
-                                    $pintegral_model = Integral::model();
-                                    $integral_info = $pintegral_model->findByPk($model->p_user_id);
-                                    $integral_info->i_total_value += Yii::app()->params['invite_give_user'];
-                                    $integral_info->i_real_value += Yii::app()->params['invite_give_user'];
-                                    $data = array(
-                                        'i_cat_alias' => 'invite_user',
-                                        'remark' => '邀请用户积分增加',
-                                    );
-                                    LYCommon::Add_integral($integral_info, $data);
-                                }
-                            }
-
-                            //插入授信额度
-                            $usercredit = new Usercredit;
-                            $usercredit->user_id = $model->user_id;
-                            $usercredit->insert();
-
+							Util::registerInsert($model);
                             if ($assets_model->insert()) {
                                 LYCommon::encryptSign($assets_model); //资金加签
-
-                                $pintegral_model = Integral::model();
-                                $integral_info = $pintegral_model->findByPk($model->user_id);
-                                $integral_info->i_total_value += Yii::app()->params['reg_integral'];
-                                $integral_info->i_real_value += Yii::app()->params['reg_integral'];
-                                $data = array(
-                                    'i_cat_alias' => 'reg_user',
-                                    'remark' => '用户注册积分增加',
-                                );
-                                LYCommon::Add_integral($integral_info, $data);
-
-                                if (!empty($model->p_user_id)) {
-                                    $pintegral_model = Integral::model();
-                                    $integral_info = $pintegral_model->findByPk($model->user_id);
-                                    $integral_info->i_total_value += Yii::app()->params['invite_user_reg'];
-                                    $integral_info->i_real_value += Yii::app()->params['invite_user_reg'];
-                                    $data = array(
-                                        'i_cat_alias' => 'inviteurl_reg',
-                                        'remark' => '通过邀请链接注册奖励积分',
-                                    );
-                                    LYCommon::Add_integral($integral_info, $data);
-                                    $p_user = User::model()->findByPk($model->p_user_id);
-                                    $p_user->invite_num = $p_user->invite_num + 1;
-                                    $p_user->update();
-                                }
-                                UtilCommon::giveRegisterMoney($model->user_id);
+                                UtilCommon::giveRegisterMoney($model->user_id,"register_award");
                                 $transaction->commit();
                                 $autologin = new UserIdentity($model->user_name, $_POST['Register']['login_pass']);
                                 if ($autologin->authenticate()) {

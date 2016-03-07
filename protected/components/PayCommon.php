@@ -1025,7 +1025,7 @@ class PayCommon {
     	$treasure_submit['orderId'] = "treasure".$recharge_model->r_BillNo ;
     	$treasure_submit['amount'] = $recharge_model->r_realmoney * 100;
     	$treasure_submit['validTime'] = "1h" ;
-    	$treasure_submit['notifyUrl'] = "" ;
+    	$treasure_submit['notifyUrl'] = Yii::app()->request->hostInfo . Yii::app()->controller->createUrl("/pay/shanxin_pay_back"); ;
     	$treasure_submit['rmk'] = "" ;
     	$treasure_submit['mercBusTyp'] = "" ;
     	$signStr = "" ;

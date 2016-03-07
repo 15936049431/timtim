@@ -26,4 +26,13 @@ class AwardBillController extends BController {
             'page_list' => $page_list,
         ));
     }
+    
+    public function actioncreate(){
+    	
+    }
+    
+    public function actionupdate(){
+    	
+    }
+        
 }
