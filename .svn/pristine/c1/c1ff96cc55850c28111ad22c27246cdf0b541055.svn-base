@@ -1,0 +1,482 @@
+<?php
+
+class ProjectController extends Controller {
+
+    public function actions() {
+        return array(
+            // captcha action renders the CAPTCHA image displayed on the contact page
+            'captcha' => array(
+                'class' => 'CCaptchaAction',
+                'backColor' => 0xFFFFFF,
+                'minLength' => 4,
+                'maxLength' => 4,
+                'width' => 80,
+                'height' => 32,
+                'testLimit' => 1,
+            ),
+            // page action renders "static" pages stored under 'protected/views/site/pages'
+            // They can be accessed via: index.php?r=site/page&view=FileName
+            'page' => array(
+                'class' => 'CViewAction',
+            ),
+        );
+    }
+
+    public function actionlist($status = 0, $timelimit = 0, $rate = 0) {
+        $project_model = Project::model();
+        $criteria = new CDbCriteria;
+        if (isset($_GET['Project'])) {
+            
+        }
+        if (!empty($status)) {//借款状态
+            switch ($status) {
+                case 1:
+                    $criteria->compare('p_status', 1);
+                    $criteria->addCondition('p_account > p_account_yes');
+                    break;
+                case 2:
+                    $criteria->compare('p_status', 1);
+                    $criteria->addCondition('p_account = p_account_yes');
+                    break;
+                case 3:
+                    $criteria->compare('p_status', 3);
+                    break;
+                case 4:
+                    $criteria->compare('p_status', 7);
+                    break;
+            }
+        } else {
+            $criteria->compare('p_status', array(1, 3, 7));
+        }
+
+        if (!empty($timelimit)) {//借款期限
+            switch ($timelimit) {
+                case 1:
+                    $criteria->addCondition('p_time_limittype = 1', 'OR');
+                    $criteria->addBetweenCondition('p_time_limit', 1, 3);
+                    break;
+                case 2:
+                    $criteria->addBetweenCondition('p_time_limit', 4, 6);
+                    break;
+                case 3:
+                    $criteria->addBetweenCondition('p_time_limit', 7, 9);
+                    break;
+                case 4:
+                    $criteria->addBetweenCondition('p_time_limit', 10, 12);
+                    break;
+                case 5:
+                    $criteria->addBetweenCondition('p_time_limit', 13, 15);
+                    break;
+                case 6:
+                    $criteria->addCondition('p_time_limit > 15');
+                    break;
+            }
+        }
+
+        if (!empty($rate)) {
+            switch ($rate) {
+                case 1:
+                    $criteria->addCondition('p_apr < 10');
+                    break;
+                case 2:
+                    $criteria->addBetweenCondition('p_apr', 10, 15);
+                    break;
+                case 3:
+                    $criteria->addBetweenCondition('p_apr', 15, 18);
+                    break;
+                case 4:
+                    $criteria->addBetweenCondition('p_apr', 18, 20);
+                    break;
+                case 5:
+                    $criteria->addCondition('p_apr > 20');
+                    break;
+            }
+        }
+        $total_count = $project_model->count($criteria);
+        $page = new Pagination($total_count, 10);
+        $page_list = $page->fpage(array(4, 5, 6, 3, 7,0,2));
+        $page_list = $total_count <= $page->limitnum ? "" : $page_list;
+        $criteria->limit = $page->limitnum;
+        $criteria->offset = $page->offset;
+        $criteria->order = 'p_status ASC, ((p_account - p_account_yes)/p_account) DESC, p_verifytime DESC';
+        $list = $project_model->findAll($criteria);
+        foreach ($list as $k => $v) {
+            $list[$k]->scalar = round($v->p_account_yes / $v->p_account, 2) * 100;
+            $list[$k]->valid_use = round(((time() - $v->p_verifytime) / 86400 / $v->p_valid_time * 100), 2);
+            $have_days = ($v->p_valid_time - ($v->p_valid_time * $list[$k]->valid_use / 100)) * 86400;
+            $day = floor($have_days / 86400);
+            $hours = floor(($have_days - $day * 86400) / 3600);
+            $list[$k]->valid_have = (time() < $v->p_valid_time * 86400 + $v->p_verifytime) ? "剩余" . (($day > 0) ? "{$day}天" : "") . (($hours > 0) ? "{$hours}小时" : (($day == 0) ? "不到一小时" : "")) : "已到期";
+        }
+        $this->render('list', array(
+            'model' => $project_model,
+            'list' => $list,
+            'page_list' => $page_list,
+        ));
+    }
+
+    public function actiontender($id=null) {
+        $project_model = Project::model();
+        $project_now = $project_model->findByPk($id);
+        if (empty($project_now)) {
+            throw new CHttpException(404);
+        }
+        $message = $success = 0;
+        $userid = Yii::app()->user->id;
+        //获取投资列表
+        $order_model = ProjectOrder::model();
+        $order_list = $order_model->findAllByAttributes(array('p_project_id' => $id));
+
+        //获取用户资金信息
+        $assets_model = Assets::model();
+        $user_assets = $assets_model->findByPk($userid);
+        //获取用户信息
+        $user_model = User::model();
+        $user_info = $user_model->findByPk($userid);
+
+        //获取项目图片
+        $project_pic_model = ProjectPic::model();
+        $project_pic_list = $project_pic_model->findAllByAttributes(array(
+            'p_project_id' => $project_now->p_id,
+        ));
+        $timer = $project_now->p_verifytime + ($project_now->p_valid_time * 3600 * 24) - time();
+        
+        $project_order_model = new ProjectOrder;
+        if (isset($_POST['ProjectOrder'])) {
+        	$project_order_model->attributes = $_POST['ProjectOrder'];
+        	$project_order_model->p_realmoney = $project_order_model->p_money;
+        	$status = 1;
+        	if (($project_order_model->p_money + $project_now->p_account_yes) > $project_now->p_account) {
+        		$project_order_model->p_money = round($project_now->p_account - $project_now->p_account_yes,4);
+        		$status = 2;
+        	}
+        	$project_order_model->p_id = LYCommon::getInsertID();
+        	$project_order_model->p_user_id = $userid;
+        	$project_order_model->p_status = $status;
+        	$project_order_model->p_award_bill = empty($_POST['p_award_bill']) ? "" : $_POST['p_award_bill'] ;
+        	$project_order_model->p_award_money = empty($_POST['p_award_money']) ? "" : $_POST['p_award_money'] ;
+        	
+        	$connection = Yii::app()->db;
+        	$sql = "select sum(p_money) from {{project_order}} where p_user_id='{$userid}' and p_project_id='{$project_now->p_id}'";
+        	$result = $connection->createCommand($sql)->queryScalar();
+        	$last_time = $connection->createCommand("select p_addtime from {{project_order}} where p_user_id='{$userid}' order by p_addtime DESC")->queryScalar();
+        	if ($user_info->pay_pass != LYCommon::get_pass($user_info->user_id, $project_order_model->pay_pass)) {
+        		$message = "交易密码输入有误";
+        	} elseif ($project_order_model->p_money > $user_assets->real_money) {
+        		$message = "投标金额大于可用金额";
+        	} elseif ($project_now->p_dxb != "" && $project_now->p_dxb != $_POST['ProjectOrder']['p_dxb']) {
+        		$message = "定向标密码输入有误!";
+        	} elseif ($project_now->p_user_id == $userid) {
+        		$message = "不能投自己的标!";
+        	} elseif ($project_now->p_user_id == $userid) {
+        		$success = array("不能投自己的标", Yii::app()->controller->createUrl('usercenter/home'), 2, 2);
+	        } elseif ($user_info->is_realname_check != 1) {
+	        	$success = array("请先进行实名认证", Yii::app()->controller->createUrl('safecenter/index'), 2, 2);
+	        } elseif ($project_now->p_status != 1) {
+            	$message = '状态有误';
+            } elseif (!is_numeric($project_order_model->p_money) || $project_order_model->p_money <= 0) {
+	            $message = '投标金额非法';
+	        } elseif ($project_now->p_account < ($project_now->p_account_yes + $project_order_model->p_money)) {
+	            $message = '投标金额大于可投金额';
+	        } elseif ($project_order_model->p_realmoney < $project_now->p_lowaccount && Yii::app()->params['project_quota'] == 1) {
+	            $message = '投标金额小于最小投标限额';
+	        } elseif ($project_order_model->p_money > $project_now->p_mostaccount && Yii::app()->params['project_quota'] == 1 && $project_now->p_mostaccount != 0) {
+	            $message = '投标金额大于最大投标限额';
+	        } elseif (!empty($result) && $result + $project_order_model->p_money > $project_now->p_mostaccount && $project_now->p_mostaccount != 0 && Yii::app()->params['project_quota']){
+	        	$message = "您的投标总额已经大于最高投资金额{$project_now->p_mostaccount}" ;
+	        } elseif (!empty($last_time) && time() - $last_time < 10 ){
+	        	$message = "休息会,请不要操作过于频繁哦 !" ;
+	        } else {
+        		$result = LYCommon::AddOrder($project_now, $project_order_model);
+        		$project_now = $project_model -> findByPk($project_now->p_id);
+        		if ($result === true) {
+        			if ($project_now->p_account_yes >= $project_now->p_account) {
+        				$project_now -> p_fulltime = time();
+        				if($project_now->p_type == 4){
+        					$project_now->p_fullverifyuser = 0;
+        					$project_now->p_fullverifytime = time();
+        					$project_now->p_status = 3;
+        					$project_now->p_fullverifyremark = "秒标自动审核通过";
+        					$project_now->update();
+        					$project_order_list = $project_order_model->findAllByAttributes(array("p_project_id" => $project_now->p_id));
+        					LYCommon::AddRepay($project_now, $project_order_list);
+        					$repayment_model = ProjectRepay::model();
+        					$repayment_list = $repayment_model->findAllByAttributes(array("p_project_id" => $project_now->p_id, "p_status" => "0"));
+        					foreach ($repayment_list as $k => $v) {
+        						LYCommon::Repay($v);
+        					}
+        				}else{
+        					$project_now->update();
+        				}
+        			}
+        			$success = array("投标成功", Yii::app()->controller->createUrl('userproject/orderon'), 1, 1);
+        		} else {
+        			$message = $result;
+        		}
+        	}
+        }
+        $this->render('tender', array(
+            'project_now' => $project_now,
+            'order_list' => $order_list,
+            'user_assets' => $user_assets,
+            'user_info' => $user_info,
+            'project_pic_list' => $project_pic_list,
+            'timer' => $timer,
+        	'project_order_model'=>$project_order_model,
+        	"message"=>$message,
+        	"success"=>$success,
+        ));
+    }
+
+    public function actionGetCity() {
+        $area_model = Area::model();
+        $area = $area_model->findAllByAttributes(array('pid' => $_POST['city']));
+        if (!empty($area)) {
+            $str = "";
+            foreach ($area as $key => $value) {
+                $str.="<option value='{$value->id}'>{$value->name}</option>";
+            }
+            echo $str;
+            exit;
+        }
+        echo "error";
+        exit;
+    }
+
+    public function actionBorrow() {
+        $message = 0;
+        $userid = Yii::app()->user->id;
+        $user_model = User::model();
+        $user_info = $user_model->findByPk($userid);
+        if (Yii::app()->user->getIsGuest()) {
+            $message = array("请您先登录", "1", Yii::app()->controller->createUrl('site/login'), "2000");
+        } elseif ($user_info->is_realname_check != 1) {
+            $message = array("请您先进行实名认证", "1", Yii::app()->controller->createUrl('safecenter/index'), "2000");
+        }
+
+        $project_model = new Project;
+        $repayment_type_arr = array(); //还款方式
+        $repayment_type_day = array();
+        $day_style = array("3", "4");
+        $month_style = array("1", "2", "5");
+        foreach (LYCommon::GetItemList('project_repay_type') as $k => $v) {
+            if (in_array($v->i_value, $day_style)) {
+                $repayment_type_day[$v->i_value] = $v->i_name;
+            }
+            if (in_array($v->i_value, $month_style)) {
+                $repayment_type_arr[$v->i_value] = $v->i_name;
+            }
+        }
+
+        $project_type_arr = LYCommon::findcat('project_type', '');
+
+        $project_minorder_type_arr = array();  //最小投标金额
+        foreach (LYCommon::GetItemList('project_minorder_type') as $k => $v) {
+            $project_minorder_type_arr[$v->i_value] = $v->i_name;
+        }
+
+        $project_maxorder_type_arr = array();  //最多投标金额
+        foreach (LYCommon::GetItemList('project_maxorder_type') as $k => $v) {
+            $project_maxorder_type_arr[$v->i_value] = $v->i_name;
+        }
+        $project_maxorder_type_arr = array_reverse($project_maxorder_type_arr);
+        //$project_maxorder_type_arr = rsort($project_maxorder_type_arr);
+
+        $project_day_type_arr = array();  //借款天分
+        foreach (LYCommon::GetItemList('project_day_type') as $k => $v) {
+            $project_day_type_arr[$v->i_value] = $v->i_name;
+        }
+
+        $project_month_type_arr = array();  //借款月份
+        foreach (LYCommon::GetItemList('project_month_type') as $k => $v) {
+            $project_month_type_arr[$v->i_value] = $v->i_name;
+        }
+
+        $project_validtime_arr = array(); //借款有效时间
+        foreach (LYCommon::GetItemList('project_valid_type') as $k => $v) {
+            $project_validtime_arr[$v->i_value] = $v->i_name;
+        }
+        if (isset($_POST['Project'])) {
+            $project_model->attributes = $_POST['Project'];
+            $project_model->p_user_id = Yii::app()->user->id;
+            $project_model->p_status = 0;
+            $project_model->p_type = $_POST['type'];
+            $project_model->p_addtime = time();
+            $project_model->p_addip = $_SERVER['REMOTE_ADDR'];
+            $project_model->p_id = LYCommon::getInsertID();
+            if ($project_model->validate()) {
+                if ($project_model->p_account < 50 || $project_model->p_account > 5000000) {
+                    $message = array("借款金额最小50最大500万", "0", "", 2000);
+                } elseif ($project_model->p_apr < 12 || $project_model->p_apr > 24) {
+                    $message = array("借款利率要在12%-24%之间", "0", "", 2000);
+                } elseif ($project_model->p_award_type == 1 && ($project_model->p_award < 0 || $project_model->p_award > 100 )) {
+                    $message = array("设置奖励非法", "0", "", 2000);
+                } elseif ($project_model->p_award_type == 2 && ($project_model->p_award < 0 || $project_model->p_award > 100000 )) {
+                    $message = array("设置奖励非法", "0", "", 2000);
+                } elseif (isset($_POST['is_dxb']) && $_POST['is_dxb'] == 1 && $project_model->p_dxb == "") {
+                    $message = array("定向标密码不能为空", "0", "", 2000);
+                } elseif ($project_model->p_style == 5 && ($project_model->p_time_limit % 3 != 0)) {
+                    $message = array("按季还款月份必须为3的倍数", "0", "", 2000);
+                } else {
+                    if (isset($_POST['Project']['propic'])) {
+                        foreach ($_POST['Project']['propic'] as $k => $v) {
+                            $project_pic_model = new ProjectPic();
+                            $project_pic_model->p_id = LYCommon::getInsertID();
+                            $project_pic_model->p_project_id = $project_model->p_id;
+                            $project_pic_model->p_pic = $project_model->p_name;
+                            $project_pic_model->p_src = $v;
+                            $project_pic_model->p_addtime = time();
+                            $project_pic_model->p_addip = Yii::app()->request->userHostAddress;
+                            $project_pic_model->insert();
+                        }
+                    }
+//                            if(isset($_FILES['Projectpic'])){
+//                                foreach($_FILES['Projectpic']['name']['pro_pic'] as $k => $v){
+//                                    $project_pic_model = new ProjectPic();
+//                                    $project_pic_model -> p_id = LYCommon::getInsertID();
+//                                    $project_pic_model -> p_project_id = $project_model->p_id;
+//                                    $project_pic_model -> p_pic = $project_model->p_name;
+//                                    $project_pic_model -> p_addtime = time();
+//                                    $project_pic_model -> p_addip = Yii::app()->request->userHostAddress;
+//                                    $image=CUploadedFile::getInstanceByName("Projectpic[pro_pic][{$k}]");
+//                                    if($image) {
+//                                        if($image->extensionName!='jpg' && $image->extensionName!='jpeg' && $image->extensionName!='png')
+//                                            die('上传文件非法');
+//                                        if(!empty($image)){
+//                                            $dir=dirname(Yii::app()->basePath).DIRECTORY_SEPARATOR.'upload'.DIRECTORY_SEPARATOR.'project'.DIRECTORY_SEPARATOR;
+//                                            if(!is_dir($dir)) {
+//                                                    die('文件夹不存在');
+//                                            }
+//                                            $name=time().strtolower(rand(1000,9999)).strrchr($image->name,'.');
+//                                            $image->saveAs($dir.$name);
+//                                            $project_pic_model->p_src=$name;
+//                                            LYCommon::saveThumb($dir.$name, $dir.'s_'.$name);    //保存图像的时候，生成缩略图。
+//                                        }
+//                                    }
+//                                    $project_pic_model -> insert();
+//                                }
+//                            }
+                    if ($project_model->insert()) {
+                        //发送站内信
+                        LYCommon::send_message(0, $project_model->p_user_id, 'submit_borrow_suc', array(
+                            'project_name' => $project_model->p_name,
+                        ));
+                        $message = array("发布成功", "1", Yii::app()->controller->createUrl('userproject/project'), "2000");
+                    }
+                }
+            } else {
+                $error = LYCommon::GetError($project_model->getErrors());
+                $message = array($error, "0", "", 2000);
+            }
+        }
+
+        $this->render('borrow', array(
+            'project_model' => $project_model,
+            'repayment_type_arr' => $repayment_type_arr,
+            'repayment_type_day' => $repayment_type_day,
+            'project_minorder_type_arr' => $project_minorder_type_arr,
+            'project_maxorder_type_arr' => $project_maxorder_type_arr,
+            'project_day_type_arr' => $project_day_type_arr,
+            'project_month_type_arr' => $project_month_type_arr,
+            'project_validtime_arr' => $project_validtime_arr,
+            'project_type_arr' => $project_type_arr,
+            'message' => $message,
+        ));
+    }
+
+    public function actionCalculator() {
+        $project_model = new Project;
+        $result = array();
+        $message = 0;
+        if (isset($_REQUEST['account'])) {
+            $project_model=project::model();
+            $project_model->p_account=yii::app()->request->getParam("account");
+            $project_model->p_apr=yii::app()->request->getParam("apr");
+            $project_model->p_time_limit=yii::app()->request->getParam("time_limit");
+            $project_model->p_time_limittype=yii::app()->request->getParam("type");
+            $project_model->p_style=yii::app()->request->getParam("style");
+            
+            if ($project_model->p_account < 50 || $project_model->p_account > 5000000) {
+                $message = array("借款金额最小50最大500万", "0", "", 2000);
+            } elseif ($project_model->p_apr < 12 || $project_model->p_apr > 24) {
+                $message = array("借款利率要在12%-24%之间", "0", "", 2000);
+            } elseif ($project_model->p_time_limit < 1 || $project_model->p_time_limit > 24) {
+                $message = array("借款期限要在1-24个月", "0", "", 2000);
+            } else {
+                $result = LYCommon::GetStyle(array(
+                            'style' => $project_model->p_style,
+                            'real_money' => $project_model->p_account,
+                            'p_apr' => $project_model->p_apr,
+                            'p_time_limit' => $project_model->p_time_limit
+                ));
+				
+				$result['total_count'] = count($result['data']);
+				echo json_encode($result);
+                die;
+            }
+        }
+        $repay_style = array();
+        $repay_list = LYCommon::GetItemList('project_repay_type');
+        foreach ($repay_list as $k => $v) {
+            $repay_style[$v['i_value']] = $v['i_name'];
+        }
+
+        $this->render('calculator', array(
+            'project_model' => $project_model,
+            'repay_style' => $repay_style,
+            'result' => $result,
+            'message' => $message,
+        ));
+    }
+    
+    public function actionUpload_project_pic() {
+        $pic_name = $_FILES['Filedata']['name'];
+        $image = CUploadedFile::getInstanceByName("Filedata");
+        if ($image) {
+            if ($image->extensionName != 'jpg' && $image->extensionName != 'jpeg' && $image->extensionName != 'png' && $image->extensionName != 'gif')
+                die('上传文件非法');
+            if (!empty($image)) {
+                $dir = dirname(Yii::app()->basePath) . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'projectpic' . DIRECTORY_SEPARATOR;
+                if (!is_dir($dir)) {
+                    mkdir($dir);
+                    if (!is_dir($dir)) {
+                        die('文件夹不存在');
+                    }
+                }
+                $name = time() . strtolower(rand(1000, 9999)) . strrchr($image->name, '.');
+                $image->saveAs($dir . $name);
+                LYCommon::saveThumb($dir . $name, $dir . 's_' . $name);    //保存图像的时候，生成缩略图。
+            }
+        }
+        echo json_encode(array('pic_name' => $name));
+    }
+    
+    public function actionchoosered($id,$money){
+    	$user_id = Yii::app()->user->id;
+    	$message = $success = 0 ;
+    	$project_info = Project::model()->findByPk($id);
+    	if(empty($user_id)){
+    		$success = array("请先登录",Yii::app()->controller->createUrl("site/login"),2,2);
+    	}elseif(empty($project_info)){
+    		$success = array("操作非法",Yii::app()->controller->createUrl("project/list"),2,2);
+    	}
+    	$award_bill = AwardBill::model()->findAll(array("condition"=>"user_id='{$user_id}' and status = 0"));
+    	foreach($award_bill as $k=>$v){
+    		if($money >= $v->low_account && $money <= $v->most_account){
+    			if($project_info->p_time_limit >= $v->min_limit && $project_info->p_time_limit <= $v->max_limit && $project_info->p_time_limittype==0){
+    				continue;
+    			}else{
+    				unset($award_bill[$k]);
+    			}
+    		}else{
+    			unset($award_bill[$k]);
+    		}
+    	}
+    	$this->renderPartial("choosered",array(
+    		"award_list"=>$award_bill,
+    		"success"=>$success,
+    		"message"=>$message,
+    	));
+    }
+
+}

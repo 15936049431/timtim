@@ -39,8 +39,8 @@ return array(
         'sourceLanguage'=>'en',
 	// preloading 'log' component
 	'preload'=>array('log'),
-//        'defaultController'=>$is_phone_browser?'wap/site/login':'site/index',
-		'defaultController'=>'site/index',
+        'defaultController'=>$is_phone_browser?'wap/site/login':'site/index',
+//		'defaultController'=>'site/index',
 
 	// autoloading model and component classes
 	'import'=>array(
@@ -109,7 +109,7 @@ return array(
 			'emulatePrepare' => true,
 			'tablePrefix'=>'ly_',
 			'username' => 'root',
-			'password' => '',
+			'password' => 'Lxy402216351',
 			'charset' => 'utf8',
 		),
 		

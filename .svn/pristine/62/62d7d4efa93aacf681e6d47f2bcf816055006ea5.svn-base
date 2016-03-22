@@ -1,0 +1,124 @@
+<div class="user_money_main">
+                        <dl class="user_money_tab clear">
+                            <dd class="sel"><a href="#">充值</a></dd>
+                            <dd><a href="<?php echo Yii::app()->controller->createUrl("usercenter/cash"); ?>">提现</a></dd>
+                        </dl>
+                        <?php $form = $this -> beginWidget('CActiveForm',array('htmlOptions'=>array('name'=>'form1'))); ?>
+                            <table>
+                                <tr>
+                                    <td>充值方式：</td>
+                                    <td>
+                                        <dl class="recharge_type clear" id="change_type">
+                                            <dd attr="online">在线充值</dd>
+<!--                                             <dd attr="overline">线下充值</dd> -->
+                                        </dl>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>选择银行：</td>
+                                    <td class="clear">
+                                        <ul class="recharge_choose fl clear_fixed bl bt">
+                                        	<?php foreach($online_recharge as $k=>$v){  ?>
+                                            	<li item="<?php echo $v->i_nid; ?>" id="treasure_<?php echo $v->i_nid; ?>"><em><span><img src="<?php echo UIMG_URL; ?>bank/<?php echo $v->i_nid; ?>.jpg"" alt="" style="width:130px;height:34px;" /></em></span></li>
+                                           	<?php } ?>
+                                        </ul>
+<!--                                         <ul class="recharge_choose fl clear_fixed bl bt hidden">
+                                            <?php foreach($overline_recharge as $k=>$v){  ?>
+                                            	<li class="overline" item="<?php echo $v->i_nid; ?>"><em><span><?php echo $v->i_value; ?></em></span></li>
+                                           	<?php } ?>
+                                         </ul> -->
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>当前可用余额：</td>
+                                    <td><?php echo $assets_info->real_money; ?>元</td>
+                                </tr>
+<!--                                 <tr id="over_bill" class="hidden"> 
+                                     <td>银行流水单：</td> 
+                                    <td><?php echo $form->textField($recharge_model,"r_BillNo",array("placeholder"=>"请填写银行流水单号","onkeyup"=>"value = value.replace(/[^0-9]/g, '')","style"=>"width:300px;")); ?></a></td>
+                                </tr> -->
+                                <tr>
+                                    <td>充值金额：</td>
+                                    <td>
+                                       <?php echo $form->textField($recharge_model,'r_money',array('class'=>'input','placeholder'=>'请填写充值金额',"onkeyup"=>"value = value.replace(/[^0-9\.]/g, '')")); ?><span class="i">元</span><i>请输入整数！</i>
+                                    </td>
+                                </tr>
+                                <tr style="display:none;" id="bank">
+                                    <td>选择银行卡：</td>
+                                    <td>
+                                    <?php if(!empty($bank_list)){ ?>
+                                        <select name="bankCard" style="padding:10px;width:222px;">
+                                        	<?php foreach($bank_list as $k=>$v){ ?>
+	                                            <option value="<?php echo $v->b_id; ?>"><?php echo LYCommon::half_replace($v->b_cardNum); ?></option>
+	                                        <?php } ?>
+                                        </select>
+                                    <?php }else{ ?>
+                                    	<a href="<?php echo Yii::app()->controller->createUrl("usercenter/bank"); ?>">请先绑定银行卡</a>
+                                    <?php } ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>充值费用：</td>
+                                    <td><i>0.00</i>元</td>
+                                </tr>
+                                <tr>
+                                    <td>验证码：</td>
+                                    <td><?php echo $form->textField($recharge_model,'authcode',array('class'=>'code','placeholder'=>'请填写验证码',"onkeyup"=>"value = value.replace(/[^a-zA-Z]/g, '')")); ?>
+                                    	<?php $this->widget('CCaptcha',array('showRefreshButton'=>false,'clickableImage'=>true,'imageOptions'=>array('alt'=>'点击换图','title'=>'看不清楚?请点击刷新验证码','style'=>'vertical-align:middle;cursor:pointer;'))); ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td class="clear">
+                                    	<input type="hidden" name="AssetsRecharge[r_recharge_type]" id="recharge" value="" />
+										<input type="hidden" name="type" value="online" />
+                                        <input type="submit" class="btn" value="确认充值" />
+                                        <span class="i ml20"></span>
+                                    </td>
+                                </tr>
+                            </table>
+                        <?php $this->endWidget(); ?>
+                        <div class="user_mone_desc mt20">
+                            <p>* 温馨提示：网上银行充值过程中请耐心等待,充值成功后，请不要关闭浏览器,充值成功后返回皖平财富,充值金额才能打入您的帐号。<i>如有问题，请与我们联系；线下充值如遇到问题，请马上与客服联系联系；</i></p>
+                            <p><i>（1）线下充值奖励充值金额的千分之二，建议留有小数以便皖平财富查询，如10000.08。</i></p>
+                            <p><i>（2）有效充值登记时间为:周一到周日 9：00—21:00，充值成功请跟我们的客服联系。</i></p>
+                        </div>
+                    </div>
+<script>
+$("#change_type dd").click(function(){
+	$(this).addClass("sel").siblings().removeClass("sel");
+	$("input[name='type']").val($(this).attr("attr"));
+	$(".user_money_main .recharge_choose").eq($(this).index()).find("li:first").click();
+	if($(this).attr("attr")=="overline"){
+		$("#over_bill").show();
+	}else{
+		$("#over_bill").hide();
+	}
+});
+$(".recharge_choose li").click(function(){
+	$("#recharge").val($(this).attr("item"));
+	if($("#recharge").val() == "shanxin_pay"){
+		$("#bank").show();
+	}else{
+		$("#bank").hide();
+	}
+});
+$(function(){
+	$("#change_type dd:first").click();
+});	
+<?php if(isset($_POST['AssetsRecharge'])){ ?>
+	var _choose = '<?php echo $_POST['AssetsRecharge']['r_recharge_type']; ?>';
+	$("#treasure_"+_choose).click();
+<?php } ?>
+</script>
+<?php if(!empty($message)){ ?>
+<script>
+	pointererror('<?php echo $message; ?>', 6);
+</script>
+<?php } ?>
+<?php if(!empty($success)){ ?>
+<script>
+	pointermsg('<?php echo $success['0']; ?>','<?php echo $success['1']; ?>','<?php echo $success['2']; ?>','<?php echo $success['3']; ?>');  
+</script>
+<?php } ?>
+

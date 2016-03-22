@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=8" />
+		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+        <title><?php echo !empty($this->page_title)?$this->page_title.' - '.Yii::app()->params['site_name'].Yii::app()->params['site_fname']:Yii::app()->params['site_name'].' - '.Yii::app()->params['site_fname']; ?></title>
+        <meta name="Keywords" content="<?php echo Yii::app()->params['site_keywords']; ?>">
+		<meta name="description" content="<?php echo Yii::app()->params['site_description']; ?>">
+        <link href="<?php echo CSS_URL; ?>main.css" rel="stylesheet" type="text/css" />
+        <link href="<?php echo JS_URL; ?>jPackageCss/jPackage.css" rel="stylesheet" type="text/css" />
+        <?php if($this->load_jquery){ ?><script type="text/javascript" src="<?php echo JS_URL; ?>jquery-1.7.1.min.js"></script><?php } ?>
+        <script type="text/javascript" src="<?php echo JS_URL; ?>jPackage-1.4.1.min.js"></script>
+        <?php foreach($this->css as $k=>$v){ if(!empty($v)){ ?>
+       		<link rel="stylesheet" type="text/css" href="<?php echo CSS_URL.$v; ?>.css" />
+        <?php }} ?>
+        <?php foreach($this->ucss as $k=>$v){ if(!empty($v)){ ?>
+       		<link rel="stylesheet" type="text/css" href="<?php echo UCSS_URL.$v; ?>.css" />
+        <?php }} ?>
+        <?php foreach($this->js as $k=>$v){ if(!empty($v)){  ?>
+        	<script type="text/javascript" src="<?php echo JS_URL.$v; ?>.js"></script>
+        <?php }} ?>
+        <?php foreach($this->ujs as $k=>$v){ if(!empty($v)){  ?>
+        	<script type="text/javascript" src="<?php echo UJS_URL.$v; ?>.js"></script>
+        <?php }} ?>
+        <script type="text/javascript" src="<?php echo JS_URL; ?>function.js"></script>
+        <?php 
+    	  if(strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 7.0") || strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 6.0")) {
+			$script="<script src='".JS_URL."layer-old/layer.min.js'></script><script src='".JS_URL."7pointer.js'></script>";
+		  }else{
+		  	$script="<script src='".JS_URL."layer/layer.js'></script><script src='".JS_URL."7pointer_back.js'></script>";
+		  }
+		  echo $script;
+		?>
+    </head>
+    <body>        
+        <!-- 头部 开始 -->
+        <div class="top_box wrap">
+            <div class="top_main wrap bb">
+                <div class="top_main main">
+                    <span>服务热线<font><?php echo Yii::app()->params['site_phone']; ?></font></span>
+                    <div class="fr">
+                        <!--span class="fontello wb" src="<?php echo IMG_URL; ?>wx.jpg">&#xe859;</span>-->
+                        <span class="fontello wx" src="<?php echo IMG_URL; ?>wx.jpg">&#xe858;</span>
+                    </div>
+                    <div class="fr">
+                    <?php if(Yii::app()->user->getIsGuest()){ ?>
+                    	<a href="<?php echo Yii::app()->controller->createUrl("site/login"); ?>">登录</a>
+                        <i class="pipe">&nbsp;</i>
+                        <a href="<?php echo Yii::app()->controller->createUrl("site/register"); ?>">注册</a>
+                        <i class="pipe">&nbsp;</i>
+                    <?php }else{ ?>
+                    	<a href="<?php echo Yii::app()->controller->createUrl("usercenter/home"); ?>">欢迎您，<?php echo Yii::app()->user->name; ?></a>
+                        <i class="pipe">&nbsp;</i>
+                        <a href="<?php echo Yii::app()->controller->createUrl("usercenter/recharge"); ?>">充值</a>
+                        <i class="pipe">&nbsp;</i>
+                        <a href="<?php echo Yii::app()->controller->createUrl("usercenter/cash"); ?>">提现</a>
+                        <i class="pipe">&nbsp;</i>
+                        <a href="<?php echo Yii::app()->controller->createUrl("site/logout"); ?>">退出</a>
+                        <i class="pipe">&nbsp;</i>
+                    <?php } ?>
+                        <a href="<?php echo Yii::app()->controller->createUrl("article/list",array("p"=>"about","cat"=>"aboutus")); ?>">关于我们</a>
+                    </div>
+                </div>
+            </div>
+            <div class="top_head wrap">
+                <div class="main clear">
+                    <div class="top_logo fl">
+                        <a href="/"><img src="<?php echo IMG_URL; ?>logo.png" alt="添添利" /></a>
+                    </div>
+                    <ul class="top_nav fr clear_fixed">
+                    	<li><a href="/">首页</a></li>
+                        <li class="sel"><a href="<?php echo Yii::app()->controller->createUrl("project/list"); ?>">我要理财</a></li>
+<!--                     <li><a href="javascript:;" onclick="openWindow('借款申请','400','450','<?php //echo Yii::app()->controller->createUrl("project/borrowapply"); ?>');">我要借款</a></li>-->
+                        <li><a href="<?php echo Yii::app()->controller->createUrl("html/safety"); ?>">安全保障</a></li>
+                        <li><a href="<?php echo Yii::app()->controller->createUrl("article/list",array("p"=>"novice","cat"=>"question")); ?>">帮助中心</a></li>
+                        <li><a href="<?php echo Yii::app()->controller->createUrl("article/list",array("p"=>"about","cat"=>"aboutus")); ?>">关于我们</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- 头部 结束 -->
+        
+            <?php echo $content; ?>
+        
+        <!-- 尾部 开始 -->
+        <div class="foot_box wrap bt">
+            <div class="main">
+                <div class="clear">
+                    <div class="foot_column1 fl">
+                        <dl class="clear">
+                            <dt>
+                                <a href="/"><img src="<?php echo IMG_URL; ?>logo.png" alt="添添利" /></a>
+                            </dt>
+                            <dd>添添利是用先进的理念和创新的技术建立的一个安全、高效、诚信、透明的互联网金融中介平台，规范了个人借贷行为,让借出者增加投资渠道。</dd>
+                        </dl>                        
+                    </div>
+                    <div class="foot_column2 fr clear_fixed">
+                        <dl>
+                            <dt><img src="<?php echo IMG_URL; ?>wx.jpg" alt="微信订阅号二维码" /></dt>
+                            <dd>微信订阅号</dd>
+                        </dl>
+                        <dl>
+                            <dt></dt>
+                            <dd></dd>
+                        </dl>
+                    </div>
+                    <div class="foot_column3 fr">
+                        <h1>服务热线</h1>
+                        <p>在线提问：如果您有疑问可联系在线客服。</p>
+                        <p>投资人QQ群：<?php echo Yii::app()->params['site_qq6']; ?></p>
+                        <h2><?php echo Yii::app()->params['site_phone']; ?></h2>
+                    </div>
+                    <p class="foot_links clear">
+                        <a href="<?php echo Yii::app()->controller->createUrl("article/list",array('p'=>"about","cat"=>"aboutus")); ?>">公司介绍</a>
+                        <i class="pipe">&nbsp;</i>
+                        <a href="<?php echo Yii::app()->controller->createUrl("html/safety"); ?>">安全保障</a>
+                        <i class="pipe">&nbsp;</i>
+                        <a href="<?php echo Yii::app()->controller->createUrl("article/list",array("p"=>"novice","cat"=>"fee")); ?>">资费说明</a>
+                        <i class="pipe">&nbsp;</i>
+                        <a href="<?php echo Yii::app()->controller->createUrl("article/list",array("p"=>"about","cat"=>"contact")); ?>">联系我们</a>
+                        <i class="pipe">&nbsp;</i>
+                    </p>
+                </div>
+                <div class="foot_text main">
+                    <p>&copy; <?php echo Yii::app()->params['site_company']; ?>  备案号: <?php echo Yii::app()->params["site_record"]; ?></p>
+                </div>
+            </div>
+        </div>
+        <!-- 尾部 结束 -->
+        <ul class="right_fixed">
+            <li class="f_app">
+                <em></em>
+                <div class="f_con">
+                    <dl class="t_code">
+                        <dd><img src="<?php echo IMG_URL; ?>wx.jpg" alt="" /></dd>
+                        <dt>扫描关注添添利</dt>
+                    </dl>
+                </div>
+            </li>
+            <li class="f_phone">
+                <em></em>
+                <div class="f_con">
+                    <h3><?php echo Yii::app()->params['site_phone']; ?></h3>
+                </div>
+            </li>
+            <li class="f_qq">
+                <em></em>
+                <div class="f_con">
+                    <h3><a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=537015780&site=qq&menu=yes"><img border="0" src="http://wpa.qq.com/pa?p=2:537015780:52" alt="点击这里给我发消息" title="点击这里给我发消息"/><span style="position:relative;top:-6px;left:10px;">客服-用心</span></a></h3>
+                    <h3><a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=537015782&site=qq&menu=yes"><img border="0" src="http://wpa.qq.com/pa?p=2:537015782:52" alt="点击这里给我发消息" title="点击这里给我发消息"/><span style="position:relative;top:-6px;left:10px;">客服-放心</span></a></h3>
+                    <h3><a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=537015781&site=qq&menu=yes"><img border="0" src="http://wpa.qq.com/pa?p=2:537015781:52" alt="点击这里给我发消息" title="点击这里给我发消息"/><span style="position:relative;top:-6px;left:10px;">客服-安心</span></a></h3>
+                    <h3><a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=537015783&site=qq&menu=yes"><img border="0" src="http://wpa.qq.com/pa?p=2:537015783:52" alt="点击这里给我发消息" title="点击这里给我发消息"/><span style="position:relative;top:-6px;left:10px;">财务-恒心</span></a></h3>
+                </div>
+            </li>
+            <li class="f_top" onclick="$('html, body').animate({'scroll-top':0},'fast');">
+                <em></em>
+                <div class="f_con">
+                    <a href="javascript:;" onclick="$('html, body').animate({'scroll-top':0},'fast');"><h2>返回顶部</h2></a>
+                </div>
+            </li>
+        </ul>
+    </body>
+</html>
